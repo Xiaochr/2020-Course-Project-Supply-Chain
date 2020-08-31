@@ -60,8 +60,8 @@ export default {
       cur_item: {},
       orig_item: {},
       curIndex: 1,
-      stateFilter: -1,
-      typeFilter: -1,
+      stateFilter: "所有",
+      typeFilter: "所有",
       detailVisible: false,
       addVisible: false,
       searchVisible: false,
@@ -108,7 +108,7 @@ export default {
 
 <style>
 .table-card {
-  width: 800px;
+  width: 1200px;
   margin: 100px auto;
 }
 #app {

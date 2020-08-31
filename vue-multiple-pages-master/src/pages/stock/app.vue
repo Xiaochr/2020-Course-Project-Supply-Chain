@@ -23,7 +23,7 @@
           </el-form-item>
         </el-col>
       </el-form>
-      <el-table :data="items" height="250" stripe border>
+      <el-table :data="items" height="300" stripe border>
         <el-table-column prop="moID" label="订单批次"></el-table-column>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
         <el-table-column prop="mName" label="原料名称"></el-table-column>
@@ -61,7 +61,7 @@ export default {
       cur_item: {},
       orig_item: {},
       curIndex: 1,
-      filter: -1,
+      filter: "所有",
       countVisible: false,
       searchContent: '',
       refreshFlag: 0,
@@ -157,7 +157,7 @@ export default {
 
 <style>
 .table-card {
-  width: 800px;
+  width: 1200px;
   margin: 100px auto;
 }
 #app {

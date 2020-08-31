@@ -12,7 +12,7 @@
           <el-button type="primary" icon="el-icon-search" plain @click="searchName()">搜索</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="items" height="250" stripe border>
+      <el-table :data="items" height="350" stripe border>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
         <el-table-column prop="mName" label="原料名称"></el-table-column>
         <el-table-column prop="mType" label="原料类型"></el-table-column>
@@ -20,6 +20,7 @@
         <el-table-column prop="price2" label="价格2"></el-table-column>
         <el-table-column prop="price3" label="价格3"></el-table-column>
         <el-table-column prop="unit" label="单位"></el-table-column>
+        <el-table-column prop="shelfLife" label="保质期/天"></el-table-column>
         <el-table-column label="编辑">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="editMaterial(scope.row, scope.$index)">编辑</el-button>
@@ -44,16 +45,9 @@
     <el-dialog :title="addFlag?'新增原料':'修改原料'" :visible="addVisible" @close="closeAdd()">
       <el-form>
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="原料编号">
-              <el-input v-model="cur_item.mID" placeholder="Please input id" :disabled="true"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="8">
             <el-form-item label="原料名称">
-              <el-input v-model="cur_item.mName" placeholder="Please input name"></el-input>
+              <el-input type="text" v-model="cur_item.mName" placeholder="Please input name" oninput="if(value.length>10) value=value.slice(0,10)"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="7">
@@ -62,14 +56,21 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="原料类型">
-              <el-input v-model="cur_item.mType" placeholder="Please input type"></el-input>
+              <el-select v-model="cur_item.mType">
+                <el-option label="肉类" value="肉类"></el-option>
+                <el-option label="海鲜" value="海鲜"></el-option>
+                <el-option label="蔬菜" value="蔬菜"></el-option>
+                <el-option label="主食" value="主食"></el-option>
+                <el-option label="其他" value="其他"></el-option>
+                <el-option label="酒水" value="酒水"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="6">
             <el-form-item label="价格1">
-              <el-input v-model="cur_item.price1" placeholder="Please input price"></el-input>
+              <el-input type="number" v-model="cur_item.price1" placeholder="Please input price" min=0></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -78,7 +79,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="价格2">
-              <el-input v-model="cur_item.price2" placeholder="Please input price"></el-input>
+              <el-input type="number" v-model="cur_item.price2" placeholder="Please input price" min=0></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -87,7 +88,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="价格3">
-              <el-input v-model="cur_item.price3" placeholder="Please input price"></el-input>
+              <el-input type="number" v-model="cur_item.price3" placeholder="Please input price" min=0></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -103,7 +104,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="保质期">
-              <el-input v-model="cur_item.shelfLife" placeholder="Please input"></el-input>
+              <el-input type="number" v-model="cur_item.shelfLife" placeholder="Please input"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -172,7 +173,7 @@ export default {
         function(data) {
           console.log(data);
           this.items = data.body
-          this.curLen = this.items.length
+          this.curLen = this.items[this.items.length - 1].mID
         }
       )
     },
@@ -193,28 +194,38 @@ export default {
         function(data) {
           console.log(data)
           this.refreshFlag ++
-        }
+          this.delVisible = false
+          this.$notify({
+            title: 'Success',
+            message: 'Successfully deleted!',
+            duration: 6000
+          })
+        },
+        this.$notify({
+          title: 'Error',
+          message: 'Delete error!',
+          duration: 6000
+        })
       )
-      this.delVisible = false
-      this.$notify({
-        title: 'Success',
-        message: 'Success!',
-        duration: 6000
-      })
     },
     saveMaterial() {
       this.$http.post('http://127.0.0.1:8000/backend/info/add/', this.cur_item, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
           this.refreshFlag ++
-        }
-      ),
-      this.addVisible = false,
-      this.$notify({
-        title: 'Success',
-        message: 'Success!',
-        duration: 6000
-      })
+          this.addVisible = false,
+          this.$notify({
+            title: 'Success',
+            message: 'Successfully saved!',
+            duration: 6000
+          })
+        },
+        this.$notify({
+          title: 'Error',
+          message: 'Save error! No empty values, please. ',
+          duration: 6000
+        })
+      )
     },
     resetMaterial() {
       this.cur_item = Object.assign({}, this.orig_item)
@@ -234,9 +245,13 @@ export default {
       this.$http.post('http://127.0.0.1:8000/backend/info/search/', {'mName': this.searchContent}, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
-          //this.refreshFlag ++
           this.items = data.body
-        }
+        },
+        this.$notify({
+          title: 'Error',
+          message: 'Search error!',
+          duration: 6000
+        })
       )
     }
   },
@@ -253,7 +268,7 @@ export default {
 
 <style>
 .table-card {
-  width: 800px;
+  width: 1200px;
   margin: 100px auto;
 }
 #app {

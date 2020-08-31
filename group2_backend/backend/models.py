@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class MaterialInfo(models.Model):
-    mID = models.CharField(max_length=10, primary_key=True)
+    mID = models.IntegerField(primary_key=True)
     mName = models.CharField(max_length=10)
     mType = models.CharField(max_length=10)
     price1 = models.FloatField()
@@ -14,8 +14,8 @@ class MaterialInfo(models.Model):
     shelfLife = models.IntegerField()
 
 class MaterialStock(models.Model):
-    moID = models.CharField(max_length=10)
-    mID = models.CharField(max_length=10)
+    moID = models.IntegerField()
+    mID = models.IntegerField()
     mName = models.CharField(max_length=10)
     arrival = models.DateField(auto_now= True)
     stock = models.IntegerField()
@@ -24,7 +24,7 @@ class MaterialStock(models.Model):
         unique_together = ("moID", "mID", "mState")
 
 class MaterialOrder(models.Model):
-    moID = models.CharField(max_length=10, primary_key=True)
+    moID = models.IntegerField(primary_key=True)
     oDate = models.DateField(auto_now= True)
     aDate = models.DateField(auto_now= True)
     moState = models.IntegerField()
@@ -37,7 +37,7 @@ class MaterialOrderDetail(models.Model):
     price = models.FloatField()
 
 class KitchenOrder(models.Model):
-    order_id = models.CharField(max_length=10, primary_key=True)
+    order_id = models.IntegerField(primary_key=True)
     order_type = models.CharField(max_length=10)
     koState = models.IntegerField()
 
