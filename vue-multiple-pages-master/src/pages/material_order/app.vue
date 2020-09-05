@@ -74,13 +74,13 @@
         <el-button type="primary" @click="closeAdd()">取消</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="添加原料" :visible="addMVisible" @close="closeMAdd()">
+    <el-dialog :title="editVisible?'修改原料':'添加原料'" :visible="addMVisible" @close="closeMAdd()">
       <el-form>
         <el-form-item label="原料名称">
           <el-input v-model="cur_material.mName" placeholder="Please input material name"></el-input>
         </el-form-item>
         <el-form-item label="所需数量">
-          <el-input v-model="cur_material.amount" placeholder="Please input amount"></el-input>
+          <el-input type="number" v-model="cur_material.amount" placeholder="Please input amount"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -101,11 +101,13 @@ export default {
       cur_material: {},
       cur_detail: [],
       curIndex: 1,
+      cur_moID: 0,
       filter: "所有",
       detailVisible: false,
       cdetailVisible: false,
       addVisible: false,
       addMVisible: false,
+      editVisible: false,
       searchVisible: false,
       searchContent: '',
       refreshFlag: 0,
@@ -167,25 +169,42 @@ export default {
     },
     addOrder() {
       this.addVisible = true
+      this.cur_moID = this.items[this.items.length - 1].moID
+      this.order_detail = []
     },
-    confirmOrder() {
+    confirmOrder() {//not finished
       this.addVisible = false
+      this.$http.post('http://127.0.0.1:8000/backend/morder/detail/add/', {'moID': this.cur_moID, 'data': this.cur_detail}, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data);
+          this.items = data.body
+        }
+      )
     },
     closeAdd() {
       this.addVisible = false
+      this.order_detail = []
     },
-    addMaterial() {
+    addMaterial() {//not finished
       this.addMVisible = true
     },
     editMaterial(row) {
       this.addMVisible = true
+      this.editVisible = true
       this.cur_material.mName = row.mName
       this.cur_material.amount = row.amount
     },
-    handleMAdd() {
+    handleMAdd() {//not finished
+      this.$http.post('http://127.0.0.1:8000/backend/morder/detail/add/', this.cur_material, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data);
+          this.order_detail.append(data.body)
+        }
+      )
       this.addMVisible = false
     },
     closeMAdd() {
+      this.cur_material = {}
       this.addMVisible = false
     },
     stateFormat(row) {
@@ -226,5 +245,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 20px;
+}
+body {
+  background: #FFF5EE;
 }
 </style>
