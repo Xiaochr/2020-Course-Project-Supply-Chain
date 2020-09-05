@@ -247,6 +247,6 @@ export default {
   margin-top: 20px;
 }
 body {
-  background: #FFF5EE;
+  background: #F5F5F5;
 }
 </style>

@@ -1,9 +1,13 @@
 <template>
   <div id="app">
+    <el-col :span="4">
+      <navcol></navcol>
+    </el-col>
+    <el-col :span="20">
     <el-card class="table-card">
-      <div slot="header">
-        原料库存
-      </div>
+      <el-page-header @back="backHome" content="原料库存"></el-page-header>
+      <el-divider></el-divider>
+      
       <el-form>
         <el-form-item label="搜索原料名称">
           <el-col :span="18">
@@ -22,8 +26,11 @@
             </el-select>
           </el-form-item>
         </el-col>
+        <el-col :span="4">
+          <el-button type="primary" plain @click="countInv()">盘库</el-button>
+        </el-col>
       </el-form>
-      <el-table :data="items" height="300" stripe border>
+      <el-table class="data-table" :data="items" height="300" stripe border>
         <el-table-column prop="moID" label="订单批次"></el-table-column>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
         <el-table-column prop="mName" label="原料名称"></el-table-column>
@@ -32,8 +39,8 @@
         <el-table-column prop="mState" label="状态" :formatter="stateFormat"></el-table-column>
       </el-table>
     </el-card>
-    <el-button type="primary" plain @click="countInv()">盘库</el-button>
-    <el-button type="primary" plain @click="backHome">返回</el-button>
+    </el-col>
+    
     <el-dialog title="盘点库存" :visible="countVisible" @close="closeCount()">
       <el-table :data="inv_list" height="200" stripe border>
         <el-table-column prop="moID" label="订单批次"></el-table-column>
@@ -52,7 +59,11 @@
 </template>
 
 <script>
+import navcol from '../../components/navcol.vue'
 export default {
+  components: {
+    navcol
+  },
   data() {
     return {
       items: [],
@@ -157,18 +168,26 @@ export default {
 
 <style>
 .table-card {
-  width: 1200px;
-  margin: 100px auto;
+  width: 1000px;
+  margin: 50px auto;
+}
+.data-table {
+  margin-top: 500px auto;
+}
+.div-text {
+  text-align: center;
+}
+.el-row {
+  margin-bottom: 20px;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 20px;
 }
 body {
-  background: #FFF5EE;
+  background: #F5F5F5;
 }
 </style>

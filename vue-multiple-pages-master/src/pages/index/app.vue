@@ -1,32 +1,26 @@
 <template>
   <div id="app">
-    <img src="../../assets/logo.png">
-    <el-card class="index-card">
-      <div slot="header">
-        库存
+    <el-col :span="4">
+      <navcol></navcol>
+    </el-col>
+    
+    <el-col :span="20">
+      <div class="div-img">
+        <img src="../../assets/pic1.jpg">
       </div>
-      <el-button type="primary" plain @click="to_material_info">原料信息</el-button>
-      <el-button type="primary" plain @click="to_stock">原料库存</el-button>
-    </el-card>
-    <el-card class="index-card">
-      <div slot="header">
-        订单
-      </div>
-      <el-button type="primary" plain @click="to_material_order">原料订单</el-button>
-      <el-button type="primary" plain @click="to_out_list">出库清单</el-button>
-    </el-card>
-    <el-button type="primary" plain @click.native="log_out">退出登录</el-button>
+    </el-col>
   </div>
 </template>
 
 <script>
-import modal from '../../components/modal.vue'
+import navcol from '../../components/navcol.vue'
 export default {
   components: {
-    modal
+    navcol
   },
   data() {
     return {
+      isCollapse: true,
       msg: 'Use Vue 2.0 Today!'
     }
   },
@@ -59,15 +53,22 @@ export default {
   width: 400px;
   margin: 50px auto;
 }
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+.div-img {
+  text-align: center;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  //text-align: center;
   color: #2c3e50;
   margin-top: 20px;
 }
 body {
-  background: #FFF5EE;
+  background: #F5F5F5;
 }
 </style>
