@@ -37,7 +37,7 @@
       <el-menu-item-group>
         <span slot="title">退出</span>
         <el-menu-item index="5" @click.native="log_out">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-switch-button"></i>
           <span slot="title">退出登录</span>
         </el-menu-item>
       </el-menu-item-group>

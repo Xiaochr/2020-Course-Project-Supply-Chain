@@ -1,16 +1,23 @@
 <template>
   <div id="app">
-    <el-card class="index-card">
-      <div slot="header">
-        权限查询界面
-      </div>
-    </el-card>
-    <el-button type="primary" plain @click="backHome()">返回</el-button>
+    <pageheader></pageheader>
+    <el-col :span="4">
+      <navcol></navcol>
+    </el-col>
+    <el-col :span="20">
+      <img src="../../assets/logo.png">
+    </el-col>
   </div>
 </template>
 
 <script>
+import navcol from '../../components/navcol.vue'
+import pageheader from '../../components/pageheader.vue'
 export default {
+  components: {
+    navcol,
+    pageheader
+  },
   data() {
     return {
       items: []
@@ -33,11 +40,10 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 20px;
 }
 body {
-  background: #FFF5EE;
+  background: #F5F5F5;
 }
 </style>

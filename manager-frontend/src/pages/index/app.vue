@@ -3,11 +3,18 @@
     <img src="../../assets/logo.png">
     <el-card class="index-card">
       <div slot="header">
-        权限查询
+        用户登录
       </div>
-      <el-button type="primary" plain @click="to_material_info">权限查询</el-button>
+      <el-form>
+        <el-form-item label="账号">
+          <el-input></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input></el-input>
+        </el-form-item>
+      </el-form>
+      <el-button type="primary" plain @click="toHomepage">登录</el-button>
     </el-card>
-    <el-button type="primary" plain @click.native="log_out">退出登录</el-button>
   </div>
 </template>
 
@@ -23,15 +30,8 @@ export default {
     }
   },
   methods: {
-    to_material_info() {
-      location.assign('../material_info.html')
-    },
-    log_out() {
-      this.$notify({
-        title: 'Success',
-        message: 'You have successfully logged out. See you!',
-        duration: 6000
-      })
+    toHomepage() {
+      location.assign('../homepage.html')
     }
   }
 }
@@ -51,6 +51,6 @@ export default {
   margin-top: 20px;
 }
 body {
-  background: #FFF5EE;
+  background: #F5F5F5;
 }
 </style>
