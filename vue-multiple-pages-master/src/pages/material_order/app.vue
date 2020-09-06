@@ -1,11 +1,14 @@
 <template>
   <div id="app">
+    <el-col :span="4">
+      <navcol></navcol>
+    </el-col>
+    <el-col :span="20">
     <el-card class="table-card">
-      <div slot="header">
-        原料订单
-      </div>
+      <el-page-header @back="backHome" content="原料订单"></el-page-header>
+      <el-divider></el-divider>
       <el-form>
-        <el-col :span="10">
+        <el-col :span="20">
           <el-form-item label="订单状态">
             <el-select v-model="filter" placeholder="请选择">
               <el-option label="所有" value=-1></el-option>
@@ -14,6 +17,9 @@
               <el-option label="已取消" value=2></el-option>
             </el-select>
           </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="primary" plain icon="el-icon-circle-plus-outline" @click="addOrder()">新增订单</el-button>
         </el-col>
       </el-form>
       <el-table :data="items" height="250" stripe border>
@@ -28,8 +34,8 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-button type="primary" plain @click="addOrder()">新增订单</el-button>
-    <el-button type="primary" plain @click="backHome">返回</el-button>
+    </el-col>
+
     <el-dialog title="订单详情" :visible="detailVisible" @close="closeDetail()">
       <el-table :data="order_detail" height="200" stripe border>
         <el-table-column prop="moID" label="订单编号"></el-table-column>
@@ -92,7 +98,11 @@
 </template>
 
 <script>
+import navcol from '../../components/navcol.vue'
 export default {
+  components: {
+    navcol
+  },
   data() {
     return {
       items: [],
@@ -235,14 +245,22 @@ export default {
 
 <style>
 .table-card {
-  width: 1200px;
-  margin: 100px auto;
+  width: 1000px;
+  margin-top: 50px auto;
+}
+.data-table {
+  margin-top: 500px auto;
+}
+.div-text {
+  text-align: center;
+}
+.el-row {
+  margin-bottom: 20px;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 20px;
 }

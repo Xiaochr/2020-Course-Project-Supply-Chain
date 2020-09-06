@@ -8,13 +8,19 @@
       <el-page-header @back="backHome" content="原料库存"></el-page-header>
       <el-divider></el-divider>
       
-      <el-form>
-        <el-form-item label="搜索原料名称">
-          <el-col :span="18">
-            <el-input v-model="searchContent" placeholder="search"></el-input>
-          </el-col>
+      <el-row>
+        <el-col :span="16">
+          <el-input v-model="searchContent" placeholder="搜索原料名称"></el-input>
+        </el-col>
+        <el-col :span="1"><p> </p></el-col>
+        <el-col :span="3">
           <el-button type="primary" icon="el-icon-search" plain @click="searchName()">搜索</el-button>
-        </el-form-item>
+        </el-col>
+        <el-col :span="3">
+          <el-button type="primary" icon="el-icon-box" plain @click="countInv()">盘库</el-button>
+        </el-col>
+      </el-row>
+      <el-form>
         <el-col :span="10">
           <el-form-item label="原料状态">
             <el-select v-model="filter" placeholder="请选择">
@@ -26,10 +32,9 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary" plain @click="countInv()">盘库</el-button>
-        </el-col>
       </el-form>
+
+      
       <el-table class="data-table" :data="items" height="300" stripe border>
         <el-table-column prop="moID" label="订单批次"></el-table-column>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
@@ -51,8 +56,8 @@
         <el-table-column prop="mState" label="状态"></el-table-column>
       </el-table>
       <span slot="footer">
-        <el-button type="success" @click="closeCount()">提交</el-button>
-        <el-button type="primary" @click="closeCount()">取消</el-button>
+        <el-button type="success" @click="submitCount()">提交</el-button>
+        <el-button type="primary" @click="closeCount()">关闭</el-button>
       </span>
     </el-dialog>
   </div>
@@ -119,15 +124,22 @@ export default {
       )
     },
     submitCount() {
-      this.$http.post('http://127.0.0.1:8000/backend/stock/receive/', this.inv_list, {emulateJSON: true}).then(
+      this.$http.post('http://127.0.0.1:8000/backend/stock/send/', this.inv_list, {emulateJSON: true}).then(
         function(data) {
-          console.log(data);
-          this.items = data.body
+          console.log(data)
+          this.countVisible = false
+          this.refreshFlag ++
+          this.$notify({
+            title: 'Success',
+            message: 'Successfully submitted! ',
+            duration: 6000
+          })
         }
       )
     },
     closeCount() {
       this.countVisible = false
+      this.refreshFlag ++
     },
     stateFormat(row) {
       if(row.mState == 0) {
@@ -169,7 +181,7 @@ export default {
 <style>
 .table-card {
   width: 1000px;
-  margin: 50px auto;
+  margin-top: 50px auto;
 }
 .data-table {
   margin-top: 500px auto;

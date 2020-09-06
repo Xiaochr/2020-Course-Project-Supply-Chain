@@ -8,7 +8,7 @@
       <el-menu-item-group>
         <span slot="title">主页</span>
         <el-menu-item index="0" @click="backHome">
-          <i class="el-icon-location"></i>
+          <i class="el-icon-s-home"></i>
           <span slot="title">主页</span>
         </el-menu-item>
       </el-menu-item-group>

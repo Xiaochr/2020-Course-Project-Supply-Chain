@@ -1,9 +1,12 @@
 <template>
   <div id="app">
+    <el-col :span="4">
+      <navcol></navcol>
+    </el-col>
+    <el-col :span="20">
     <el-card class="table-card">
-      <div slot="header">
-        出库清单
-      </div>
+      <el-page-header @back="backHome" content="出库清单"></el-page-header>
+      <el-divider></el-divider>
       <el-form>
         <el-col :span="10">
           <el-form-item label="订单状态">
@@ -36,7 +39,8 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-button type="primary" plain @click="backHome">返回</el-button>
+    </el-col>
+
     <el-dialog title="订单详情" :visible="detailVisible" @close="closeDetail()">
       <el-table :data="order_detail" height="200" stripe border>
         <el-table-column prop="order_id" label="订单编号"></el-table-column>
@@ -52,7 +56,11 @@
 </template>
 
 <script>
+import navcol from '../../components/navcol.vue'
 export default {
+  components: {
+    navcol
+  },
   data() {
     return {
       items: [],
@@ -108,14 +116,22 @@ export default {
 
 <style>
 .table-card {
-  width: 1200px;
-  margin: 100px auto;
+  width: 1000px;
+  margin-top: 50px auto;
+}
+.data-table {
+  margin-top: 500px auto;
+}
+.div-text {
+  text-align: center;
+}
+.el-row {
+  margin-bottom: 20px;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 20px;
 }

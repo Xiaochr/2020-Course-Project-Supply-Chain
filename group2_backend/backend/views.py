@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http.response import *
 from .models import *
 import requests
+import datetime
+from django.forms.models import model_to_dict
 # Create your views here.
 
 
@@ -106,7 +108,34 @@ def stock_filter(request):
     return rep      
 
 def stock_count(request):
-    return None
+    
+    def check_date(date,expiration_time):
+        '''
+        date: datetime
+        expiration_time: int
+        '''
+        gap = (datetime.datetime.now() - datetime.datetime.strptime(str(date),'%Y-%m-%d') ).days
+        # if gap >= expiration_time:
+        if gap >= 0:
+            return True
+        else:
+            return False 
+    
+    all_data = list(MaterialStock.objects.all())
+    filtered_data = []
+    for item in all_data[3:]:
+        # mID = item.get('mID')
+        mID = item.mID
+        material_obj = MaterialInfo.objects.get(pk = mID)
+        shelfLife = material_obj.shelfLife
+        moID = item.moID
+        arrival_date = item.arrival
+        res = check_date(arrival_date, shelfLife)
+        if res:
+            item.mState = 3
+            item.save()
+            filtered_data.append(model_to_dict(item))
+    return JsonResponse(filtered_data,safe = False)
 
 def stock_send(request):
     ## TODO URL修正
@@ -128,9 +157,12 @@ def morder_add(request):
     oDate = data_dict.get('oDate')
     aDate = data_dict.get('aDate')
     moState = data_dict.get('moState')
+    order_data_list = data_dict.get("data")
     to_insert = MaterialOrder(moID,oDate,aDate,moState)
-    
     to_insert.save()
+    for item in order_data_list:
+        print(type(item))
+        print(item)
     rep = HttpResponse("Successfully added the new data. ")
     return rep
 
@@ -165,7 +197,6 @@ def morder_filter(request):
     rep = JsonResponse(all_data, safe = False)
     return rep   
     
-
 def morder_stockin(request):
     data_dict = request.POST
     moID = data_dict.get('moID') 
@@ -180,7 +211,7 @@ def morder_stockin(request):
         new_stock = orig_stock + amount
         target.stock = new_stock
     rep = HttpResponse("Successfully modify the new data. ")
-    return rep    
+    return rep
     
 def korder(request):
     all_data = list(KitchenOrder.objects.all().values())
