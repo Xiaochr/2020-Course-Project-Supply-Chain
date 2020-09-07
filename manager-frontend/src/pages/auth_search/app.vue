@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <pageheader></pageheader>
     <el-col :span="4">
       <navcol></navcol>
     </el-col>

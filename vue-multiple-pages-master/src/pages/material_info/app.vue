@@ -3,6 +3,7 @@
     <el-col :span="4">
       <navcol></navcol>
     </el-col>
+
     <el-col :span="20">
     <el-card class="table-card">
       <el-page-header @back="backHome" content="原料信息"></el-page-header>
@@ -40,8 +41,8 @@
         </el-table-column>
       </el-table>
     </el-card>
-    
     </el-col>
+
     <el-dialog title="提示" :visible="delVisible" @close="closeDel()">
       <span>确认删除？</span>
       <span slot="footer">
@@ -49,6 +50,7 @@
         <el-button type="primary" @click="delVisible = false">取消</el-button>
       </span>
     </el-dialog>
+
     <el-dialog :title="addFlag?'新增原料':'修改原料'" :visible="addVisible" @close="closeAdd()">
       <el-form>
         <el-row>
@@ -155,31 +157,31 @@ export default {
   },
   data() {
     return {
-      items: [],
-      cur_item: {},
-      orig_item: {},
-      curIndex: 1,
-      curLen: 0,
-      delVisible: false,
-      addVisible: false,
-      searchContent: '',
-      addFlag: true,
-      refreshFlag: 0
+      items: [], //存储要在表格中显示的数据
+      cur_item: {}, //当前的一条记录
+      orig_item: {}, //修改时暂存原先未修改的记录
+      curIndex: 1, //当前的index
+      curLen: 0, //当前数据数量
+      delVisible: false, //是否显示删除对话框
+      addVisible: false, //是否显示添加对话框
+      searchContent: '', //存储需要搜索的内容
+      addFlag: true, //判断需要弹出的是修改对话框还是添加对话框
+      refreshFlag: 0 //是否刷新页面
     }
   },
   methods: {
-    backHome() {
+    backHome() { //返回主页
       location.assign('../index.html')
     },
-    closeAdd() {
+    closeAdd() { //关闭添加对话框
       this.cur_item = Object.assign({}, this.orig_item)
       this.addVisible = false
       this.refreshFlag ++
     },
-    closeDel() {
+    closeDel() { //关闭删除对话框
       this.delVisible = false
     },
-    getItems() {
+    getItems() { //向后台发送请求，获取所有原料信息
       this.$http.get('http://127.0.0.1:8000/backend/info/').then(
         function(data) {
           console.log(data);
@@ -188,7 +190,7 @@ export default {
         }
       )
     },
-    editMaterial(row, curIndex) {
+    editMaterial(row, curIndex) { //弹出编辑对话框
       this.addVisible = true,
       this.addFlag = false,
       this.cur_item = row,

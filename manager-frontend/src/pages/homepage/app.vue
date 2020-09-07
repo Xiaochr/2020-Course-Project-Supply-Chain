@@ -1,11 +1,12 @@
 <template>
   <div id="app">
-    <pageheader></pageheader>
     <el-col :span="4">
       <navcol></navcol>
     </el-col>
     <el-col :span="20">
-      <img src="../../assets/logo.png">
+      <el-card class="table-card">
+        <div>使用说明，功能说明</div>
+      </el-card>
     </el-col>
   </div>
 </template>
@@ -33,8 +34,14 @@ export default {
 
 <style>
 .table-card {
-  width: 1200px;
-  margin: 100px auto;
+  width: 1000px;
+  margin: 50px auto;
+}
+.el-header {
+  background-color: #B3C0D1;
+  color: #333;
+  line-height: 60px;
+  margin-bottom: 0;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

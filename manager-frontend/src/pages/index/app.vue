@@ -7,10 +7,10 @@
       </div>
       <el-form>
         <el-form-item label="账号">
-          <el-input></el-input>
+          <el-input v-model="id" placeholder="请输入账号"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input></el-input>
+          <el-input v-model="pswd" placeholder="请输入密码"></el-input>
         </el-form-item>
       </el-form>
       <el-button type="primary" plain @click="toHomepage">登录</el-button>
@@ -19,14 +19,11 @@
 </template>
 
 <script>
-import modal from '../../components/modal.vue'
 export default {
-  components: {
-    modal
-  },
   data() {
     return {
-      msg: 'Use Vue 2.0 Today!'
+      id,
+      pswd
     }
   },
   methods: {

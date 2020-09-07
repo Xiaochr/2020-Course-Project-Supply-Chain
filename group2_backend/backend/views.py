@@ -131,7 +131,7 @@ def stock_count(request):
         moID = item.moID
         arrival_date = item.arrival
         res = check_date(arrival_date, shelfLife)
-        if res:
+        if res and item.mState == 0:
             item.mState = 3
             item.save()
             filtered_data.append(model_to_dict(item))

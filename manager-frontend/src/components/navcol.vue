@@ -5,7 +5,6 @@
       <el-radio-button :label="true">收起</el-radio-button>
     </el-radio-group>
     <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-      
       <el-menu-item index="0" @click="toHomepage">
         <i class="el-icon-s-home"></i>
         <span slot="title">主页</span>
@@ -22,12 +21,18 @@
         <i class="el-icon-s-platform"></i>
         <span slot="title">表格概览</span>
       </el-menu-item>
-      <el-menu-item index="4" @click.native="log_out">
+      <el-menu-item index="4" @click.native="logoutVisible = true">
         <i class="el-icon-switch-button"></i>
         <span slot="title">退出登录</span>
       </el-menu-item>
-      
     </el-menu>
+    <el-dialog title="提示" :visible="logoutVisible" @close="logoutVisible = false">
+      <span>确认退出？</span>
+      <span slot="footer">
+        <el-button type="danger" @click="confirmLogout()">退出</el-button>
+        <el-button type="primary" @click="logoutVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -35,7 +40,8 @@
 export default {
   data() {
     return {
-      isCollapse: true
+      isCollapse: true,
+      logoutVisible: false
     }
   },
   methods: {
@@ -51,7 +57,8 @@ export default {
     toTables() {
       location.assign('../tables.html')
     },
-    log_out() {
+    confirmLogout() {
+      this.logoutVisible = false
       this.$notify({
         title: 'Success',
         message: 'You have successfully logged out. See you!',
