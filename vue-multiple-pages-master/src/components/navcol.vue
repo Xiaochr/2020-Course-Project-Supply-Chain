@@ -15,7 +15,7 @@
       <el-menu-item-group>
         <span slot="title">库存</span>
         <el-menu-item index="1" @click="to_material_info">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-s-management"></i>
           <span slot="title">原料信息</span>
         </el-menu-item>
         <el-menu-item index="2" @click="to_stock">
@@ -28,10 +28,6 @@
         <el-menu-item index="3" @click="to_material_order">
           <i class="el-icon-document"></i>
           <span slot="title">原料订单</span>
-        </el-menu-item>
-        <el-menu-item index="4" @click="to_out_list">
-          <i class="el-icon-document"></i>
-          <span slot="title">出库清单</span>
         </el-menu-item>
       </el-menu-item-group>
       <el-menu-item-group>
@@ -64,9 +60,6 @@ export default {
     },
     to_material_order() {
       location.assign('../material_order.html')
-    },
-    to_out_list() {
-      location.assign('../out_list.html')
     },
     log_out() {
       this.$notify({

@@ -2,8 +2,12 @@
   <div class="homepicture">
     <el-carousel :interval="5000" type="card" height="400px">
       <el-carousel-item v-for="(item, index) in carouselList" :key="index">
-        <img :src="item.path" alt="找不到图片" @click="to_material_info" class="carousel_image_type">
-        <h3 class="medium">{{ item.name }}</h3>
+        <div>
+          <el-image :src="item.path" alt="找不到图片" @click="toPath(item.url)" class="carousel_image_type"></el-image>
+          <span style="position: absolute; top: 0; left: 0;" class="pic_name">
+            <el-tag effect="dark" size="medium">{{item.name}}</el-tag>
+          </span> 
+        </div>
       </el-carousel-item>
     </el-carousel>
   </div>
@@ -14,27 +18,15 @@ export default {
   data() {
     return {
       carouselList: [
-        {path: require("../assets/material.jpg"), name: 2},
-        {path: require("../assets/stock.jpg"), name: 3},
-        {path: require("../assets/logistic.jpg"), name: 4}
+        {path: require("../assets/material.jpg"), name: "原料信息", url: "../material_info.html"},
+        {path: require("../assets/stock.jpg"), name: "原料库存", url: "../stock.html"},
+        {path: require("../assets/logistic.jpg"), name: "原料订单", url: "../material_order.html"}
       ]
     }
   },
   methods: {
-    backHome() {
-      location.assign('../index.html')
-    },
-    to_material_info() {
-      location.assign('../material_info.html')
-    },
-    to_stock() {
-      location.assign('../stock.html')
-    },
-    to_material_order() {
-      location.assign('../material_order.html')
-    },
-    to_out_list() {
-      location.assign('../out_list.html')
+    toPath(url) {
+      location.assign(url)
     }
   }
 }
@@ -56,5 +48,12 @@ export default {
   }
   .carousel_image_type {
     height: 400px;
+  }
+  .pic_name {
+    font-size: 30;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
   }
 </style>

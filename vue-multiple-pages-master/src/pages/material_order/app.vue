@@ -65,12 +65,13 @@
       <el-table :data="order_detail" height="200" stripe border>
         <el-table-column prop="moID" label="订单编号"></el-table-column>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
+        <el-table-column prop="mName" label="原料名称"></el-table-column>
         <el-table-column prop="amount" label="原料数量"></el-table-column>
         <el-table-column prop="unit" label="原料单位"></el-table-column>
         <el-table-column prop="price" label="原料价格"></el-table-column>
-        <el-table-column label="修改">
+        <el-table-column label="删除">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="editMaterial(scope.row)">修改</el-button>
+            <el-button type="danger" size="mini" @click="delMaterial(scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -80,7 +81,7 @@
         <el-button type="primary" @click="closeAdd()">取消</el-button>
       </span>
     </el-dialog>
-    <el-dialog :title="editVisible?'修改原料':'添加原料'" :visible="addMVisible" @close="closeMAdd()">
+    <el-dialog title="添加原料" :visible="addMVisible" @close="closeMAdd()">
       <el-form>
         <el-form-item label="原料名称">
           <el-input v-model="cur_material.mName" placeholder="Please input material name"></el-input>
@@ -105,11 +106,12 @@ export default {
   },
   data() {
     return {
-      items: [],
+      items: [], //存储一系列订单信息
       temp_list: [],
-      order_detail: [],
-      cur_material: {},
+      order_detail: [], //存储单个订单中各种原料的信息
+      cur_material: {}, //order_detail中单个原料的信息
       cur_detail: [],
+      morder_post: {},
       curIndex: 1,
       cur_moID: 0,
       filter: "所有",
@@ -117,7 +119,6 @@ export default {
       cdetailVisible: false,
       addVisible: false,
       addMVisible: false,
-      editVisible: false,
       searchVisible: false,
       searchContent: '',
       refreshFlag: 0,
@@ -174,17 +175,19 @@ export default {
     closeCDetail() {
       this.cdetailVisible = false
     },
-    confirmArrival() {
+    confirmArrival() {// not finished
       this.cdetailVisible = false
     },
-    addOrder() {
+    addOrder() {// 添加新订单
       this.addVisible = true
-      this.cur_moID = this.items[this.items.length - 1].moID
+      this.cur_moID = this.items[this.items.length - 1].moID + 1
       this.order_detail = []
     },
     confirmOrder() {//not finished
       this.addVisible = false
-      this.$http.post('http://127.0.0.1:8000/backend/morder/detail/add/', {'moID': this.cur_moID, 'data': this.cur_detail}, {emulateJSON: true}).then(
+      this.morder_post = {'moID': this.cur_moID, 'data': this.order_detail}
+      console.log(this.order_detail)
+      this.$http.post('http://127.0.0.1:8000/backend/morder/add/', this.order_detail).then(
         function(data) {
           console.log(data);
           this.items = data.body
@@ -195,20 +198,19 @@ export default {
       this.addVisible = false
       this.order_detail = []
     },
-    addMaterial() {//not finished
+    addMaterial() {//not finished 在新增订单中打开添加原料窗口
       this.addMVisible = true
     },
-    editMaterial(row) {
-      this.addMVisible = true
-      this.editVisible = true
-      this.cur_material.mName = row.mName
-      this.cur_material.amount = row.amount
+    delMaterial(index) {
+      this.order_detail.splice(index)
     },
     handleMAdd() {//not finished
+      //post_data = {'mName': this.cur_material.mName, 'amount': this.cur_material.amount, 'moID': this.cur_moID}
+      this.cur_material.moID = this.cur_moID
       this.$http.post('http://127.0.0.1:8000/backend/morder/detail/add/', this.cur_material, {emulateJSON: true}).then(
         function(data) {
           console.log(data);
-          this.order_detail.append(data.body)
+          this.order_detail.push(data.body)
         }
       )
       this.addMVisible = false

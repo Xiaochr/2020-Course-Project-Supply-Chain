@@ -5,8 +5,10 @@ import requests
 import datetime
 import xmltodict, json
 import os
+from django.forms.models import model_to_dict
 
 # Create your views here.
+
 
 def info(request): ##获取MaterialInfo表中的所有数据
     all_data = list(MaterialInfo.objects.all().values())
@@ -115,30 +117,28 @@ def stock_count(request):
         date: datetime
         expiration_time: int
         '''
-        gap = (datetime.now() - datetime.datetime.strptime(str(date),'%Y-%m-%d') ).days
-        if gap >= expiration_time:
+        gap = (datetime.datetime.now() - datetime.datetime.strptime(str(date),'%Y-%m-%d') ).days
+        # if gap >= expiration_time:
+        if gap >= 0:
             return True
         else:
             return False 
     
-    all_data = list(MaterialStock.objects.all().values())
+    all_data = list(MaterialStock.objects.all())
     filtered_data = []
-    for item in all_data:
-        print(item)
-        state = item.get('mState')
-        if state != 0:
-            continue
-        mID = item.get('mID')
-        print(mID)
-        material_obj = list(MaterialInfo.objects.get(pk = mID))
+    for item in all_data[3:]:
+        # mID = item.get('mID')
+        mID = item.mID
+        material_obj = MaterialInfo.objects.get(pk = mID)
         shelfLife = material_obj.shelfLife
-        moID = item.get("moID")
-        arrival_date = item.get('arrival')
+        moID = item.moID
+        arrival_date = item.arrival
         res = check_date(arrival_date, shelfLife)
         if res:
             item.mState = 3
-            filtered_data.append(item)
-    return JsonResponse(item,safe = False)
+            item.save()
+            filtered_data.append(model_to_dict(item))
+    return JsonResponse(filtered_data,safe = False)
 
 def stock_send(request):
     ## TODO URL修正
@@ -155,59 +155,55 @@ def morder(request):
     return rep
 
 def morder_add(request):
-    # data_dict = request.POST
-    data_dict = eval(eval(str(request.body,encoding = 'utf-8')))
-    moID = int(data_dict['moID'])
-    oDate = datetime.datetime.strptime(data_dict['oDate'],'%Y-%m-%d')
-    aDate = datetime.datetime.strptime(data_dict['aDate'],'%Y-%m-%d')
-    moState = int(data_dict['moState'])
-    order_data_list = data_dict["data"]
+    data_list = eval(str(request.body,encoding = 'utf-8'))
+    moID = int(data_list[0]['moID'])
+    oDate = datetime.datetime.now()
+
+    aDate = oDate ## 待修改！！！！
+    aDate = datetime.datetime.now()
+
+    moState = 0
+
     to_insert = MaterialOrder(moID,oDate,aDate,moState)
     to_insert.save()
-    for item in order_data_list:
-        _moID = int(item['moID'])
+    for item in data_list:
         mID = int(item['mID'])
         amount = int(item['amount'])
         unit = item['unit']
         price = float(item['price'])
         material_table = MaterialInfo.objects.get(mID = mID)
-        material_order_table = MaterialOrder.objects.get(moID = _moID)
+        material_order_table = MaterialOrder.objects.get(moID = moID)
         to_insert_ = MaterialOrderDetail(moID = material_order_table, mID = material_table, amount = amount, unit = unit, price = price)
         to_insert_.save()
-    rep = HttpResponse("Successfully added the new data. ")
+    rep = HttpResponse("Successfully added the new data. ")
     return rep
 
 def morder_detail(request):
-    data_dict = request.POST
-    moID = data_dict.get('moID')
-    # all_data = list(MaterialOrderDetail.objects.all().values())
-    # for item in all_data:
-    #     print(item['moID_id'])
     # all_data = list(MaterialOrderDetail.objects.filter(moID__exact=moID).values())
-    all_data = list(MaterialOrderDetail.objects.filter(moID_id=moID).values())
+    all_data = list(MaterialOrderDetail.objects.all().values())
 
     rep = JsonResponse(all_data, safe = False)
     return rep      
 
-# def morder_detail(request):
-#     # all_data = list(MaterialOrderDetail.objects.filter(moID__exact=moID).values())
-#     all_data = list(MaterialOrderDetail.objects.all().values())
-
-#     rep = JsonResponse(all_data, safe = False)
-#     return rep      
-
 def morder_detail_add(request):
     data_dict = request.POST
-    _id = data_dict.get('id')
+    mName= data_dict.get('mName')
     moID = data_dict.get('moID')
-    mID = data_dict.get('mID')
     amount = data_dict.get('amount')
-    unit = data_dict.get('unit')
-    price = data_dict.get('price')
-
-    to_insert = MaterialOrderDetail(_id,moID,mID,amount,unit,price)
-    to_insert.save()
-    rep = HttpResponse("Successfully added the new data. ")
+    target_object = MaterialInfo.objects.get(mName = mName)
+    unit = target_object.unit
+    price = target_object.price1
+    mID = target_object.mID
+    
+    to_return = {
+        'unit':unit,
+        'price':price,
+        'moID':moID,
+        'mID':mID,
+        'mName':mName,
+        'amount':amount
+    }
+    rep = JsonResponse(to_return, safe = False)
     return rep    
 
 def morder_filter(request):
@@ -285,8 +281,9 @@ def material(request):
     to_return = []
     for _id, name in id2name.items():
         data_dict = {}
-        data_dict['ingredient_name'] = name
-        data_dict['ingredient_number'] = str(name2num[name]) + id2unit[_id]
+        unit = id2unit[_id]
+        data_dict['ingredient_name'] = name + '（' + unit + '）'
+        data_dict['ingredient_number'] = str(name2num[name])
         to_return.append(data_dict)
     
     url = None
@@ -305,11 +302,27 @@ def confirm_order_scm(request):
     material_item_list = data_dict['raw_material']
     if order_type == 0:
         error = False
+        to_return = {}
+        to_return['order_id'] = order_id
+        to_return['order_type'] = order_type
+        to_return['raw_material'] = []
         for item in material_item_list:
-            ingredient_name = item['ingredient_name']
+            ingredient_name = ' '.join(item['ingredient_name'].split('（')[:-1])
             ingredient_number = item['ingredient_number']
             ordered_stock_set = MaterialStock.objects.filter(mName = ingredient_name).order_by('arrival').values()
             flag = True
+
+            material_info_obj = MaterialInfo.objects.get(mName = ingredient_name)
+            ##传给杨泽远
+            data_dict = {}
+            data_dict['mID'] = mID
+            data_dict['mName'] = ingredient_name
+            data_dict['amount'] = ingredient_number
+            data_dict['unit'] = material_info_obj.unit
+            data_dict['price'] = material_info_obj.price
+            to_return['raw_material'].append(data_dict)
+
+
             for i in range(len(ordered_stock_set)):
                 stock_item = ordered_stock_set[i]
                 state = stock_item['mState']
@@ -317,12 +330,17 @@ def confirm_order_scm(request):
                 moID = stock_item['moID']
                 mID = stock_item['mID']
                 _id = stock_item['id']
+
+
+                
                 if state != 0:
                     if i == len(ordered_stock_set) - 1:
                         flag = False
                     continue
+
+                target_object = MaterialStock.objects.get(moID = moID, mID = mID, mState = mState)
+
                 if ingredient_number <= stock:
-                    target_object = MaterialStock.objects.get(moID = moID, mID = mID, mState = mState)
                     target_object.stock -= ingredient_number
                     if target_object.stock == 0:
                         target_object.mState = 1
@@ -339,12 +357,17 @@ def confirm_order_scm(request):
                 break
         if error:
             return HttpResponse("Fail! Not enough ingredients!")
+        else:
+            url = None
+            res = requests.post(url, data = to_return)
+            return HttpResponse("success !  ")
+
 
     else:
         error = False
         all_record = []
         for item in material_item_list:
-            ingredient_name = item['ingredient_name']
+            ingredient_name = ' '.join(item['ingredient_name'].split('（')[:-1])
             ingredient_number = item['ingredient_number']
             ordered_stock_set = MaterialStock.objects.filter(mName = ingredient_name).order_by('arrival').values()
             flag = True
@@ -397,14 +420,35 @@ def confirm_order_scm(request):
                     }
         print(all_record, file = f)
         f.close()
-
-
+        return HttpResponse("success !  ")
+        
 def confirm_takeout_scm(request):
     data_dict = xml_to_dict(request.body)
     order_id = data_dict['order_id']
     order_type = data_dict['action']
     material_item_list = data_dict['raw_material']
     if order_type == 0:
+        to_return = {}
+        to_return['order_id'] = order_id
+        to_return['order_type'] = order_type
+        to_return['raw_material'] = []
+        for item in material_item_list:
+            ingredient_name = ' '.join(item['ingredient_name'].split('（')[:-1])
+            ingredient_number = item['ingredient_number']
+            ordered_stock_set = MaterialStock.objects.filter(mName = ingredient_name).order_by('arrival').values()
+            flag = True
+
+            material_info_obj = MaterialInfo.objects.get(mName = ingredient_name)
+            ##传给杨泽远
+            data_dict = {}
+            data_dict['mID'] = mID
+            data_dict['mName'] = ingredient_name
+            data_dict['amount'] = ingredient_number
+            data_dict['unit'] = material_info_obj.unit
+            data_dict['price'] = material_info_obj.price
+            to_return['raw_material'].append(data_dict)
+        url = None
+        res = requests.post(url, data = to_return)
         return HttpResponse("success! ")
     new_record_list = []
     with open('rollback_dir/rollback_log.txt','r',encoding = 'utf-8') as f:

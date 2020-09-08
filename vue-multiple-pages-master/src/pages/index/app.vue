@@ -5,6 +5,10 @@
     </el-col>
     <el-col :span="20">
       <el-card class="table-card">
+        <el-header>
+          <h3>欢迎来到供应链管理系统</h3>
+        </el-header>
+        <el-divider></el-divider>
         <homepicture></homepicture>
       </el-card>
     </el-col>
@@ -40,6 +44,7 @@ export default {
 .table-card {
   width: 1000px;
   margin-top: 50px auto;
+  text-align: center;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
