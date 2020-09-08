@@ -9,17 +9,17 @@
         <i class="el-icon-s-home"></i>
         <span slot="title">主页</span>
       </el-menu-item>
-      <el-menu-item index="1" @click="toAuthSearch">
-        <i class="el-icon-search"></i>
-        <span slot="title">权限查询</span>
-      </el-menu-item>
-      <el-menu-item index="2" @click="toUserAuth">
-        <i class="el-icon-user-solid"></i>
-        <span slot="title">用户权限</span>
-      </el-menu-item>
-      <el-menu-item index="3" @click="toTables">
+      <el-menu-item index="1" @click="toDB">
         <i class="el-icon-s-platform"></i>
-        <span slot="title">表格概览</span>
+        <span slot="title">数据库权限</span>
+      </el-menu-item>
+      <el-menu-item index="2" @click="toForms">
+        <i class="el-icon-s-order"></i>
+        <span slot="title">表权限</span>
+      </el-menu-item>
+      <el-menu-item index="3" @click="toUsers">
+        <i class="el-icon-user-solid"></i>
+        <span slot="title">用户管理</span>
       </el-menu-item>
       <el-menu-item index="4" @click.native="logoutVisible = true">
         <i class="el-icon-switch-button"></i>
@@ -48,20 +48,20 @@ export default {
     toHomepage() {
       location.assign('../homepage.html')
     },
-    toAuthSearch() {
-      location.assign('../auth_search.html')
+    toDB() {
+      location.assign('../DBpage.html')
     },
-    toUserAuth() {
-      location.assign('../user_auth.html')
+    toForms() {
+      location.assign('../Formpage.html')
     },
-    toTables() {
-      location.assign('../tables.html')
+    toUsers() {
+      location.assign('../Userpage.html')
     },
     confirmLogout() {
       this.logoutVisible = false
       this.$notify({
-        title: 'Success',
-        message: 'You have successfully logged out. See you!',
+        title: '成功',
+        message: '退出成功！',
         duration: 6000
       })
       location.assign('../index.html')

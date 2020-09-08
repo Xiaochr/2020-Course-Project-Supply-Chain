@@ -22,4 +22,7 @@ urlpatterns = [
     path('morder/stockin/', views.morder_stockin, name='index11'),
     path('korder/', views.korder, name='index12'),
     path('korder/detail/', views.korder_detail, name='index13'),
+    path('material/', views.material, name='index14'),
+    path('confirm_order_scm/', views.confirm_order_scm, name='index15'),
+    path('confirm_takeout_scm/', views.material, name='index15'),
 ]

@@ -10,7 +10,7 @@
       <el-divider></el-divider>
       <el-row>
         <el-col :span="16">
-          <el-input v-model="searchContent" placeholder="搜索原料名称"></el-input>
+          <el-input v-model="searchContent" @keyup.enter.native="searchName()" placeholder="搜索原料名称"></el-input>
         </el-col>
         <el-col :span="1"><p> </p></el-col>
         <el-col :span="3">
@@ -56,7 +56,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="原料名称">
-              <el-input type="text" v-model="cur_item.mName" placeholder="Please input name" oninput="if(value.length>10) value=value.slice(0,10)"></el-input>
+              <el-input type="text" v-model="cur_item.mName" placeholder="请输入原料名称" oninput="if(value.length>10) value=value.slice(0,10)"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="7">
@@ -79,7 +79,7 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="价格1">
-              <el-input type="number" v-model="cur_item.price1" placeholder="Please input price" min=0></el-input>
+              <el-input type="number" v-model="cur_item.price1" placeholder="请输入价格1" min=0 oninput="if(value < 0) cur_item.price1=0"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -88,7 +88,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="价格2">
-              <el-input type="number" v-model="cur_item.price2" placeholder="Please input price" min=0></el-input>
+              <el-input type="number" v-model="cur_item.price2" placeholder="请输入价格2" min=0></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -97,14 +97,14 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="价格3">
-              <el-input type="number" v-model="cur_item.price3" placeholder="Please input price" min=0></el-input>
+              <el-input type="number" v-model="cur_item.price3" placeholder="请输入价格3" min=0></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="8">
             <el-form-item label="单位">
-              <el-input v-model="cur_item.unit" placeholder="Please input unit"></el-input>
+              <el-input v-model="cur_item.unit" placeholder="请输入单位"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="7">
@@ -113,7 +113,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="保质期">
-              <el-input type="number" v-model="cur_item.shelfLife" placeholder="Please input"></el-input>
+              <el-input type="number" v-model="cur_item.shelfLife" placeholder="请输入保质期"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -133,8 +133,8 @@
           <el-col :span="8">
             <el-form-item label="出库策略">
               <el-select v-model="cur_item.outType">
-                <el-option label="FIFO" value=0></el-option>
-                <el-option label="LIFO" value=1></el-option>
+                <el-option label="先进先出" value=0></el-option>
+                <el-option label="后进先出" value=1></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -189,6 +189,16 @@ export default {
           this.curLen = this.items[this.items.length - 1].mID
         }
       )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '获取数据失败！',
+            duration: 6000
+          })
+        }
+      )
     },
     editMaterial(row, curIndex) { //弹出编辑对话框
       this.addVisible = true,
@@ -209,16 +219,21 @@ export default {
           this.refreshFlag ++
           this.delVisible = false
           this.$notify({
-            title: 'Success',
-            message: 'Successfully deleted!',
+            title: '成功',
+            message: '删除成功！',
             duration: 6000
           })
-        },
-        this.$notify({
-          title: 'Error',
-          message: 'Delete error!',
-          duration: 6000
-        })
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '删除失败！',
+            duration: 6000
+          })
+        }
       )
     },
     saveMaterial() {
@@ -228,16 +243,21 @@ export default {
           this.refreshFlag ++
           this.addVisible = false,
           this.$notify({
-            title: 'Success',
-            message: 'Successfully saved!',
+            title: '成功',
+            message: '保存成功！',
             duration: 6000
           })
         },
-        this.$notify({
-          title: 'Error',
-          message: 'Save error! No empty values, please. ',
-          duration: 6000
-        })
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '保存失败，请勿留有空值！',
+            duration: 6000
+          })
+        }
       )
     },
     resetMaterial() {
@@ -259,18 +279,37 @@ export default {
         function(data) {
           console.log(data)
           this.items = data.body
-        },
-        this.$notify({
-          title: 'Error',
-          message: 'Search error!',
-          duration: 6000
-        })
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '搜索失败！',
+            duration: 6000
+          })
+        }
       )
     }
   },
   watch: {
     refreshFlag() {
       this.getItems()
+    },
+    cur_item() {
+      if (this.cur_item.price1 < 0) {
+        this.cur_item.price1 = 0
+      }
+      if (this.cur_item.price2 < 0) {
+        this.cur_item.price2 = 0
+      }
+      if (this.cur_item.price3 < 0) {
+        this.cur_item.price3 = 0
+      }
+      if (this.cur_item.shelfLife < 0) {
+        this.cur_item.shelfLife = 0
+      }
     }
   },
   mounted() {

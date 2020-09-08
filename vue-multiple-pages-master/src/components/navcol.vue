@@ -4,7 +4,7 @@
       <el-radio-button :label="false">展开</el-radio-button>
       <el-radio-button :label="true">收起</el-radio-button>
     </el-radio-group>
-    <el-menu default-active="1-4-1" class="el-menu-vertical-demo" :collapse="isCollapse">
+    <el-menu :default-active="index" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
       <el-menu-item-group>
         <span slot="title">主页</span>
         <el-menu-item index="0" @click="backHome">
@@ -74,6 +74,12 @@ export default {
         message: 'You have successfully logged out. See you!',
         duration: 6000
       })
+    },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
     }
   }
 }

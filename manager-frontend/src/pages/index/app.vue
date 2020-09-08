@@ -13,7 +13,7 @@
           <el-input v-model="pswd" placeholder="请输入密码"></el-input>
         </el-form-item>
       </el-form>
-      <el-button type="primary" plain @click="toHomepage">登录</el-button>
+      <el-button type="primary" plain @click="backHome">登录</el-button>
     </el-card>
   </div>
 </template>
@@ -22,12 +22,31 @@
 export default {
   data() {
     return {
-      id,
-      pswd
+      id: '',
+      pswd: '',
+      passFlag: false
     }
   },
   methods: {
-    toHomepage() {
+    login() {
+      this.$http.post('http://127.0.0.1:8000/backend/login/', {'id': this.id, 'pswd': this.pswd}, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.passFlag = data.body
+        }
+      )
+      if (this.passFlag) {
+        location.assign('../homepage.html')
+      }
+      else {
+        this.$notify({
+          title: 'Error',
+          message: 'The wrong password!',
+          duration: 6000
+        })
+      }
+    },
+    backHome() {
       location.assign('../homepage.html')
     }
   }

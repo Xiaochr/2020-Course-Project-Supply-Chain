@@ -5,9 +5,7 @@
     </el-col>
     <el-col :span="20">
       <el-card class="table-card">
-        <div>欢迎来到供应链管理系统！</div>
-        <img src="../../assets/logo.png">
-        <div>简介文本</div>
+        <homepicture></homepicture>
       </el-card>
     </el-col>
   </div>
@@ -15,13 +13,20 @@
 
 <script>
 import navcol from '../../components/navcol.vue'
+import homepicture from '../../components/homepicture.vue'
 export default {
   components: {
-    navcol
+    navcol,
+    homepicture
   },
   data() {
     return {
       msg: 'Use Vue 2.0 Today!'
+    }
+  },
+  methods: {
+    toMaterialInfo() {
+      location.assign('../material_info.html')
     }
   }
 }

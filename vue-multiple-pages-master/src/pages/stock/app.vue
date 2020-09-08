@@ -10,7 +10,7 @@
       
       <el-row>
         <el-col :span="16">
-          <el-input v-model="searchContent" placeholder="搜索原料名称"></el-input>
+          <el-input v-model="searchContent" @keyup.enter.native="searchName()" placeholder="搜索原料名称"></el-input>
         </el-col>
         <el-col :span="1"><p> </p></el-col>
         <el-col :span="3">
