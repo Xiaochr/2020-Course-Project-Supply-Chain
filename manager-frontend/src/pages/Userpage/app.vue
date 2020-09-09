@@ -22,7 +22,7 @@
       <el-table class="data-table" :data="items" height="350" stripe border>
         <el-table-column prop="user_name" label="用户"></el-table-column>
         <el-table-column prop="pswd" label="密码"></el-table-column>
-        <el-table-column prop="locked" label="是否锁定"></el-table-column>
+        <el-table-column prop="locked" label="是否锁定" :formatter="stateFormat"></el-table-column>
         <el-table-column label="编辑">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="editUser(scope.row)">编辑</el-button>
@@ -122,6 +122,14 @@ export default {
       this.addVisible = true
       this.cur_item = {}
       this.orig_item = {}
+    },
+    stateFormat(row, column, cellValue) {
+      if(cellValue == 0) {
+        return '否'
+      }
+      else if(cellValue == 1) {
+        return '是'
+      }
     }
   }
 }

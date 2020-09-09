@@ -130,8 +130,8 @@ export default {
           this.countVisible = false
           this.refreshFlag ++
           this.$notify({
-            title: 'Success',
-            message: 'Successfully submitted! ',
+            title: '成功',
+            message: '成功提交盘库清单！',
             duration: 6000
           })
         }

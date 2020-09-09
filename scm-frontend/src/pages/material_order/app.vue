@@ -52,6 +52,7 @@
       <el-table :data="order_detail" height="200" stripe border>
         <el-table-column prop="moID" label="订单编号"></el-table-column>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
+        <el-table-column prop="mName" label="原料名称"></el-table-column>
         <el-table-column prop="amount" label="原料数量"></el-table-column>
         <el-table-column prop="unit" label="原料单位"></el-table-column>
         <el-table-column prop="price" label="原料价格"></el-table-column>
@@ -83,12 +84,21 @@
     </el-dialog>
     <el-dialog title="添加原料" :visible="addMVisible" @close="closeMAdd()">
       <el-form>
-        <el-form-item label="原料名称">
-          <el-input v-model="cur_material.mName" placeholder="Please input material name"></el-input>
-        </el-form-item>
-        <el-form-item label="所需数量">
-          <el-input type="number" v-model="cur_material.amount" placeholder="Please input amount"></el-input>
-        </el-form-item>
+        <el-row>
+        <el-col :span="10">
+          <el-form-item label="原料名称">
+            <el-input v-model="cur_material.mName" placeholder="请输入原料名称"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-form-item></el-form-item>
+        </el-col>
+        <el-col :span="10">
+          <el-form-item label="所需数量">
+            <el-input type="number" v-model="cur_material.amount" placeholder="请输入数量"></el-input>
+          </el-form-item>
+        </el-col>
+        </el-row>
       </el-form>
       <span slot="footer">
         <el-button type="success" @click="handleMAdd()">提交</el-button>
@@ -180,7 +190,7 @@ export default {
     },
     addOrder() {// 添加新订单
       this.addVisible = true
-      this.cur_moID = this.items[this.items.length - 1].moID + 1
+      this.cur_moID = parseInt(this.items[this.items.length - 1].moID) + 1
       this.order_detail = []
     },
     confirmOrder() {//not finished
@@ -191,6 +201,7 @@ export default {
         function(data) {
           console.log(data);
           this.items = data.body
+          this.refreshFlag ++
         }
       )
     },

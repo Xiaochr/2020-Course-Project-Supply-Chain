@@ -59,11 +59,6 @@ export default {
     },
     confirmLogout() {
       this.logoutVisible = false
-      this.$notify({
-        title: '成功',
-        message: '退出成功！',
-        duration: 6000
-      })
       location.assign('../index.html')
     },
     handleOpen(key, keyPath) {

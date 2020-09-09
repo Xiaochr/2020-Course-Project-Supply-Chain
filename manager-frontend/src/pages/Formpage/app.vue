@@ -21,10 +21,10 @@
         <el-table-column prop="user_name" label="用户名"></el-table-column>
         <el-table-column prop="db_name" label="数据库名"></el-table-column>
         <el-table-column prop="table_name" label="数据表名"></el-table-column>
-        <el-table-column prop="add" label="增加"></el-table-column>
-        <el-table-column prop="del" label="删除"></el-table-column>
-        <el-table-column prop="search" label="查询"></el-table-column>
-        <el-table-column prop="edit" label="修改"></el-table-column>
+        <el-table-column prop="add" label="增加" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="del" label="删除" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="search" label="查询" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="edit" label="修改" :formatter="stateFormat"></el-table-column>
         <el-table-column label="修改权限">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="editAuth(scope.row)">编辑</el-button>
@@ -166,6 +166,14 @@ export default {
     },
     closeEdit() {
       this.editVisible = false
+    },
+    stateFormat(row, column, cellValue) {
+      if(cellValue == 0) {
+        return '无'
+      }
+      else if(cellValue == 1) {
+        return '有'
+      }
     }
   }
 }

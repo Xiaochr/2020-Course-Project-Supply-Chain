@@ -5,7 +5,11 @@
     </el-col>
     <el-col :span="20">
       <el-card class="table-card">
-        <div>使用说明，功能说明</div>
+        <el-header>
+          <h3>欢迎来到数据库管理系统</h3>
+        </el-header>
+        <el-divider></el-divider>
+        <homepicture></homepicture>
       </el-card>
     </el-col>
   </div>
@@ -13,11 +17,11 @@
 
 <script>
 import navcol from '../../components/navcol.vue'
-import pageheader from '../../components/pageheader.vue'
+import homepicture from '../../components/homepicture.vue'
 export default {
   components: {
     navcol,
-    pageheader
+    homepicture
   },
   data() {
     return {
@@ -35,13 +39,8 @@ export default {
 <style>
 .table-card {
   width: 1000px;
-  margin: 50px auto;
-}
-.el-header {
-  background-color: #B3C0D1;
-  color: #333;
-  line-height: 60px;
-  margin-bottom: 0;
+  margin-top: 50px auto;
+  text-align: center;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

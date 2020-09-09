@@ -179,11 +179,12 @@ def morder_add(request):
     return rep
 
 def morder_detail(request):
-    # all_data = list(MaterialOrderDetail.objects.filter(moID__exact=moID).values())
-    all_data = list(MaterialOrderDetail.objects.all().values())
+    data_dict = request.POST
+    moID = data_dict.get('moID')
+    all_data = list(MaterialOrderDetail.objects.filter(moID_id=moID).values())
 
     rep = JsonResponse(all_data, safe = False)
-    return rep      
+    return rep
 
 def morder_detail_add(request):
     data_dict = request.POST
