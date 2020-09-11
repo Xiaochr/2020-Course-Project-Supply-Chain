@@ -6,6 +6,7 @@ import datetime
 import xmltodict, json
 import os
 from django.forms.models import model_to_dict
+import copy
 
 # Create your views here.
 
@@ -159,7 +160,7 @@ def morder_add(request):
     moID = int(data_list[0]['moID'])
     oDate = datetime.datetime.now()
 
-    aDate = oDate ## 待修改！！！！
+    aDate = oDate ## 待修改！！！！
     aDate = datetime.datetime.now()
 
     moState = 0
@@ -175,16 +176,22 @@ def morder_add(request):
         material_order_table = MaterialOrder.objects.get(moID = moID)
         to_insert_ = MaterialOrderDetail(moID = material_order_table, mID = material_table, amount = amount, unit = unit, price = price)
         to_insert_.save()
-    rep = HttpResponse("Successfully added the new data. ")
+    rep = HttpResponse("Successfully added the new data. ")
     return rep
 
 def morder_detail(request):
     data_dict = request.POST
     moID = data_dict.get('moID')
     all_data = list(MaterialOrderDetail.objects.filter(moID_id=moID).values())
-
-    rep = JsonResponse(all_data, safe = False)
-    return rep
+    repackeged_data = []
+    for item in all_data:
+        mID = item['mID_id']
+        target_obj = MaterialInfo.objects.get(mID = mID)
+        mName = target_obj.mName
+        item['mName'] = mName
+        repackeged_data.append(copy.deepcopy(item))
+    rep = JsonResponse(repackeged_data, safe = False)
+    return rep          
 
 def morder_detail_add(request):
     data_dict = request.POST
@@ -227,11 +234,8 @@ def morder_stockin(request):
         amount = item['amount']
         mState = 0
         print(mID,moID,mState)
-        target = MaterialStock.objects.get(mID = mID,moID = moID, mState = mState)
-        orig_stock = target.stock
-        new_stock = orig_stock + amount
-        target.stock = new_stock
-
+        target = MaterialStock(mID = mID,moID = moID, mState = mState, arrival= datetime.datetime.now(), stock = amount)
+        target.save()
         new_data = {
             'mID':mID,
             'moID':moID,

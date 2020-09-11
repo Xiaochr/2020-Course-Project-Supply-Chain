@@ -7,11 +7,33 @@
       <el-card class="table-card">
       <el-page-header @back="backHome" content="数据表权限"></el-page-header>
       <el-divider></el-divider>
+
       <el-row>
-        <el-col :span="12">
-          <el-input v-model="searchContent" placeholder="搜索用户名"></el-input>
+        <el-col :span="8">
+          <el-select v-model="searchUser" filterable placeholder="用户名">
+            <el-option
+              v-for="item in items"
+              :key="item.user_name"
+              :label="item.user_name"
+              :value="item.user_name">
+            </el-option>
+          </el-select>
         </el-col>
-        
+        <el-col :span="1"><p> </p></el-col>
+        <el-col :span="8">
+          <el-select
+            v-model="searchTable"
+            filterable
+            collapse-tags
+            placeholder="数据表名">
+            <el-option
+              v-for="item in items"
+              :key="item.table_name"
+              :label="item.table_name"
+              :value="item.table_name">
+            </el-option>
+          </el-select>
+        </el-col>
         <el-col :span="1"><p> </p></el-col>
         <el-col :span="4">
           <el-button type="primary" icon="el-icon-search" plain @click="searchName()">搜索</el-button>
@@ -19,12 +41,12 @@
       </el-row>
       <el-table class="data-table" :data="items" height="350" stripe border>
         <el-table-column prop="user_name" label="用户名"></el-table-column>
-        <el-table-column prop="db_name" label="数据库名"></el-table-column>
         <el-table-column prop="table_name" label="数据表名"></el-table-column>
-        <el-table-column prop="add" label="增加" :formatter="stateFormat"></el-table-column>
-        <el-table-column prop="del" label="删除" :formatter="stateFormat"></el-table-column>
-        <el-table-column prop="search" label="查询" :formatter="stateFormat"></el-table-column>
-        <el-table-column prop="edit" label="修改" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="select" label="Select" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="insert" label="Insert" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="update" label="Update" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="delete" label="Delete" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="drop" label="Drop" :formatter="stateFormat"></el-table-column>
         <el-table-column label="修改权限">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="editAuth(scope.row)">编辑</el-button>
@@ -37,70 +59,85 @@
     <el-dialog title="修改权限" :visible="editVisible" @close="closeEdit()">
       <el-form>
         <el-row>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="用户名">
               <el-input type="text" v-model="cur_item.user_name" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="2">
+          <el-col :span="7">
             <el-form-item>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
-            <el-form-item label="数据库名">
-              <el-input type="text" v-model="cur_item.db_name" :disabled="true"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="2">
-            <el-form-item>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="数据表名">
               <el-input type="text" v-model="cur_item.table_name" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="8">
-            <el-form-item label="增加权限">
-              <el-select v-model="cur_item.add">
-                <el-option label="有" value="1"></el-option>
-                <el-option label="无" value="0"></el-option>
+          <el-col :span="6">
+            <el-form-item label="Select权限">
+              <el-select v-model="cur_item.select" :formatter="stateFormat">
+                <el-option label="有(1)" value="1"></el-option>
+                <el-option label="无(0)" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="2">
             <el-form-item>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="删除权限">
-              <el-select v-model="cur_item.del">
-                <el-option label="有" value="1"></el-option>
-                <el-option label="无" value="0"></el-option>
+          <el-col :span="6">
+            <el-form-item label="Update权限">
+              <el-select v-model="cur_item.update">
+                <el-option label="有(1)" value="1"></el-option>
+                <el-option label="无(0)" value="0"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-form-item>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="Delete权限">
+              <el-select v-model="cur_item.delete">
+                <el-option label="有(1)" value="1"></el-option>
+                <el-option label="无(0)" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="8">
-            <el-form-item label="查询权限">
-              <el-select v-model="cur_item.search">
-                <el-option label="有" value="1"></el-option>
-                <el-option label="无" value="0"></el-option>
+          <el-col :span="6">
+            <el-form-item label="Insert权限">
+              <el-select v-model="cur_item.insert">
+                <el-option label="有(1)" value="1"></el-option>
+                <el-option label="无(0)" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="2">
             <el-form-item>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="修改权限">
-              <el-select v-model="cur_item.edit">
-                <el-option label="有" value="1"></el-option>
-                <el-option label="无" value="0"></el-option>
+          <el-col :span="6">
+            <el-form-item label="Drop权限">
+              <el-select v-model="cur_item.drop">
+                <el-option label="有(1)" value="1"></el-option>
+                <el-option label="无(0)" value="0"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-form-item>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="所有权限">
+              <el-select v-model="cur_item.all">
+                <el-option label="有(1)" value="1"></el-option>
+                <el-option label="无(0)" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -126,27 +163,58 @@ export default {
       items: [
         {
           'user_name': 'u1',
-          'db_name': 'DB1',
           'table_name': 'table1',
-          'add': 1,
-          'del': 0,
-          'search': 1,
-          'edit': 0
+          'select': 1,
+          'insert': 0,
+          'update': 0,
+          'delete': 1,
+          'drop': 1,
+          'all': 0
+        },
+        {
+          'user_name': 'u1',
+          'table_name': 'table2',
+          'select': 1,
+          'insert': 0,
+          'update': 0,
+          'delete': 1,
+          'drop': 1,
+          'all': 0
         },
         {
           'user_name': 'u2',
-          'db_name': 'DB1',
           'table_name': 'table2',
-          'add': 1,
-          'del': 1,
-          'search': 1,
-          'edit': 1
+          'select': 1,
+          'insert': 1,
+          'update': 1,
+          'delete': 1,
+          'drop': 1,
+          'all': 1
         }
       ],
       cur_item: {},
       orig_item: {},
-      searchContent: "",
-      editVisible: false
+      searchUser: "",
+      searchTable: "",
+      editVisible: false,
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value1: [],
+      value2: []
     }
   },
   methods: {

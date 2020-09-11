@@ -170,18 +170,18 @@ export default {
     }
   },
   methods: {
-    backHome() { //返回主页
+    backHome() {// 返回主页
       location.assign('../index.html')
     },
-    closeAdd() { //关闭添加对话框
+    closeAdd() {// 关闭添加对话框
       this.cur_item = Object.assign({}, this.orig_item)
       this.addVisible = false
       this.refreshFlag ++
     },
-    closeDel() { //关闭删除对话框
+    closeDel() {// 关闭删除对话框
       this.delVisible = false
     },
-    getItems() { //向后台发送请求，获取所有原料信息
+    getItems() {// 向后台发送请求，获取所有原料信息
       this.$http.get('http://127.0.0.1:8000/backend/info/').then(
         function(data) {
           console.log(data);
@@ -200,19 +200,19 @@ export default {
         }
       )
     },
-    editMaterial(row, curIndex) { //弹出编辑对话框
+    editMaterial(row, curIndex) {// 弹出编辑对话框
       this.addVisible = true,
       this.addFlag = false,
       this.cur_item = row,
       this.orig_item = Object.assign({}, this.cur_item),
       this.curIndex = curIndex
     },
-    delMaterial(row, curIndex) {
+    delMaterial(row, curIndex) {// 弹出删除对话框
       this.delVisible = true,
       this.cur_item = row,
       this.curIndex = curIndex
     },
-    handleDel() {
+    handleDel() {// 确认删除
       this.$http.post('http://127.0.0.1:8000/backend/info/del/', this.cur_item, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
@@ -236,7 +236,7 @@ export default {
         }
       )
     },
-    saveMaterial() {
+    saveMaterial() {// 确认保存
       this.$http.post('http://127.0.0.1:8000/backend/info/add/', this.cur_item, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
@@ -260,12 +260,12 @@ export default {
         }
       )
     },
-    resetMaterial() {
+    resetMaterial() {// 重置数据
       this.cur_item = Object.assign({}, this.orig_item)
-      console.log(this.cur_item)
-      console.log(this.orig_item)
+      //console.log(this.cur_item)
+      //console.log(this.orig_item)
     },
-    addMaterial() {
+    addMaterial() {// 打开添加对话框
       this.addVisible = true,
       this.addFlag = true,
       this.cur_item = {},
@@ -274,7 +274,7 @@ export default {
       this.orig_item = {},
       this.curIndex = this.items.length
     },
-    searchName() {
+    searchName() {// 模糊搜索
       this.$http.post('http://127.0.0.1:8000/backend/info/search/', {'mName': this.searchContent}, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
@@ -325,9 +325,6 @@ export default {
 }
 .data-table {
   margin-top: 500px auto;
-}
-.div-text {
-  text-align: center;
 }
 .el-row {
   margin-bottom: 20px;

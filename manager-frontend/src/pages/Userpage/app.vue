@@ -21,18 +21,48 @@
       </el-row>
       <el-table class="data-table" :data="items" height="350" stripe border>
         <el-table-column prop="user_name" label="用户"></el-table-column>
-        <el-table-column prop="pswd" label="密码"></el-table-column>
         <el-table-column prop="locked" label="是否锁定" :formatter="stateFormat"></el-table-column>
-        <el-table-column label="编辑">
+        <el-table-column label="锁定/解锁">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" icon="el-icon-edit" @click="editUser(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-lock" @click="lockUser(scope.row)">操作</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="修改密码">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" icon="el-icon-edit" @click="editUser(scope.row)">修改</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
     </el-col>
 
-    <el-dialog :title="addVisible?'添加用户':'编辑用户'" :visible="editVisible" @close="closeEdit()">
+    <el-dialog title="修改用户密码" :visible="editVisible" @close="closeEdit()">
+      <el-form>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="用户名">
+              <el-input type="text" v-model="cur_item.user_name" :disabled="true"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="密码">
+              <el-input type="text" v-model="cur_item.pswd"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer">
+        <el-button type="success" @click="saveEdit()">提交</el-button>
+        <el-button type="primary" @click="resetEdit()">重置</el-button>
+        <el-button type="primary" @click="closeEdit()">取消</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="添加用户" :visible="addVisible" @close="closeEdit()">
       <el-form>
         <el-row>
           <el-col :span="6">
@@ -56,17 +86,25 @@
           <el-col :span="6">
             <el-form-item label="是否锁定">
               <el-select v-model="cur_item.locked">
-                <el-option label="是" value="1"></el-option>
-                <el-option label="否" value="0"></el-option>
+                <el-option label="是(1)" value="1"></el-option>
+                <el-option label="否(0)" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <span slot="footer">
-        <el-button type="success" @click="saveEdit()">提交</el-button>
-        <el-button type="primary" @click="resetEdit()">重置</el-button>
-        <el-button type="primary" @click="closeEdit()">取消</el-button>
+        <el-button type="success" @click="saveAdd()">提交</el-button>
+        <el-button type="primary" @click="resetAdd()">重置</el-button>
+        <el-button type="primary" @click="closeAdd()">取消</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="修改用户状态" :visible="lockVisible" @close="closeLock()">
+      <span>确认修改？</span>
+      <span slot="footer">
+        <el-button type="danger" @click="handleLock()">修改</el-button>
+        <el-button type="primary" @click="closeLock()">取消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -83,12 +121,12 @@ export default {
       items: [
         {
           'user_name': 'u1',
-          'pswd': 'u1u1',
+          'pswd': '',
           'locked': 0
         },
         {
           'user_name': 'u2',
-          'pswd': 'u2u2',
+          'pswd': '',
           'locked': 1
         }
       ],
@@ -96,7 +134,8 @@ export default {
       orig_item: {},
       searchContent: "",
       editVisible: false,
-      addVisible: false
+      addVisible: false,
+      lockVisible: false
     }
   },
   methods: {
@@ -108,7 +147,18 @@ export default {
       this.cur_item = row
       this.orig_item = Object.assign({}, this.cur_item)
     },
-    saveEdit() {
+    lockUser(row) {
+      this.lockVisible = true
+      this.cur_item = row
+    },
+    handleLock() {// not finished
+      //this.cur_item
+      this.lockVisible = false
+    },
+    closeLock() {
+      this.lockVisible = false
+    },
+    saveEdit() {// no finished
       this.editVisible = false
     },
     resetEdit() {
@@ -118,10 +168,18 @@ export default {
       this.editVisible = false
     },
     addUser() {
-      this.editVisible = true
       this.addVisible = true
       this.cur_item = {}
       this.orig_item = {}
+    },
+    saveAdd() {// no finished
+      this.addVisible = false
+    },
+    resetAdd() {
+      this.cur_item = Object.assign({}, this.orig_item)
+    },
+    closeAdd() {
+      this.addVisible = false
     },
     stateFormat(row, column, cellValue) {
       if(cellValue == 0) {

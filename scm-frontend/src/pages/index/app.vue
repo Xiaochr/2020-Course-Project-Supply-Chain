@@ -28,7 +28,7 @@ export default {
     }
   },
   methods: {
-    login() {
+    login() {// 登录
       this.$http.post('http://127.0.0.1:8000/backend/login/', {'id': this.id, 'pswd': this.pswd}, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
@@ -46,7 +46,7 @@ export default {
         })
       }
     },
-    backHome() {
+    backHome() {// 为方便调试设置的假登录函数
       location.assign('../homepage.html')
     }
   }

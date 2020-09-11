@@ -58,19 +58,19 @@ export default {
     }
   },
   methods: {
-    backHome() {
+    backHome() {// 转到主页
       location.assign('../homepage.html')
     },
-    to_material_info() {
+    to_material_info() {// 转到原料信息页面
       location.assign('../material_info.html')
     },
-    to_stock() {
+    to_stock() {// 转到原料库存页面
       location.assign('../stock.html')
     },
-    to_material_order() {
+    to_material_order() {// 转到原料订单页面
       location.assign('../material_order.html')
     },
-    confirmLogout() {
+    confirmLogout() {// 确认退出登录
       this.logoutVisible = false
       location.assign('../index.html')
     },

@@ -27,20 +27,11 @@ export default {
     return {
       msg: 'Use Vue 2.0 Today!'
     }
-  },
-  methods: {
-    toMaterialInfo() {
-      location.assign('../material_info.html')
-    }
   }
 }
 </script>
 
 <style lang="postcss">
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 400px;
-}
 .table-card {
   width: 1000px;
   margin-top: 50px auto;

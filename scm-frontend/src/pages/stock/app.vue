@@ -34,7 +34,6 @@
         </el-col>
       </el-form>
 
-      
       <el-table class="data-table" :data="items" height="300" stripe border>
         <el-table-column prop="moID" label="订单批次"></el-table-column>
         <el-table-column prop="mID" label="原料编号"></el-table-column>
@@ -71,24 +70,19 @@ export default {
   },
   data() {
     return {
-      items: [],
-      temp_list: [],
-      inv_list: [],
-      cur_item: {},
-      orig_item: {},
-      curIndex: 1,
-      filter: "所有",
-      countVisible: false,
-      searchContent: '',
-      refreshFlag: 0,
-      addFlag: true
+      items: [], //存储要在表格中显示的数据
+      inv_list: [], //存储盘库得到的过期原料列表
+      filter: "所有", //筛选
+      countVisible: false, //是否显示盘库对话框
+      searchContent: '', //存储需要搜索的内容
+      refreshFlag: 0 //是否刷新页面
     }
   },
   methods: {
-    backHome() {
+    backHome() {// 返回主页
       location.assign('../index.html')
     },
-    getItems() {
+    getItems() {// 向后台发送请求，获取所有原料库存信息
       this.$http.get('http://127.0.0.1:8000/backend/stock/').then(
         function(data) {
           console.log(data);
@@ -96,7 +90,7 @@ export default {
         }
       )
     },
-    getFiltered() {
+    getFiltered() {// 向后台发送请求，获取筛选后的原料库存信息
       if(this.filter==-1) {
         this.$http.get('http://127.0.0.1:8000/backend/stock/').then(
           function(data) {
@@ -114,7 +108,7 @@ export default {
         )
       }
     },
-    countInv() {
+    countInv() {// 盘库
       this.countVisible = true
       this.$http.get('http://127.0.0.1:8000/backend/stock/count/').then(
         function(data) {
@@ -123,7 +117,7 @@ export default {
         }
       )
     },
-    submitCount() {
+    submitCount() {// 向财务组发送盘库清单
       this.$http.post('http://127.0.0.1:8000/backend/stock/send/', this.inv_list, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
@@ -137,7 +131,7 @@ export default {
         }
       )
     },
-    closeCount() {
+    closeCount() {// 关闭盘库页面
       this.countVisible = false
       this.refreshFlag ++
     },
@@ -155,7 +149,7 @@ export default {
         return '已过期'
       }
     },
-    searchName() {
+    searchName() {// 搜索功能
       this.$http.post('http://127.0.0.1:8000/backend/stock/search/', {'mName': this.searchContent}, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
@@ -185,9 +179,6 @@ export default {
 }
 .data-table {
   margin-top: 500px auto;
-}
-.div-text {
-  text-align: center;
 }
 .el-row {
   margin-bottom: 20px;
