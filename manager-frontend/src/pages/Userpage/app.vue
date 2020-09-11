@@ -9,19 +9,19 @@
       <el-divider></el-divider>
       <el-row>
         <el-col :span="16">
-          <el-input v-model="searchContent" @keyup.enter.native="searchName()" placeholder="搜索用户名"></el-input>
+          <el-input v-model="searchUser" @keyup.enter.native="searchUsername()" placeholder="搜索用户名"></el-input>
         </el-col>
         <el-col :span="1"><p> </p></el-col>
         <el-col :span="3">
-          <el-button type="primary" icon="el-icon-search" plain @click="searchName()">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" plain @click="searchUsername()">搜索</el-button>
         </el-col>
         <el-col :span="3">
           <el-button type="primary" icon="el-icon-circle-plus-outline" plain @click="addUser()">添加用户</el-button>
         </el-col>
       </el-row>
       <el-table class="data-table" :data="items" height="350" stripe border>
-        <el-table-column prop="user_name" label="用户"></el-table-column>
-        <el-table-column prop="locked" label="是否锁定" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="user" label="用户"></el-table-column>
+        <el-table-column prop="account_locked" label="是否锁定" :formatter="stateFormat"></el-table-column>
         <el-table-column label="锁定/解锁">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-lock" @click="lockUser(scope.row)">操作</el-button>
@@ -67,7 +67,7 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="用户名">
-              <el-input type="text" v-model="cur_item.user_name"></el-input>
+              <el-input type="text" v-model="cur_item.user"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -85,7 +85,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="是否锁定">
-              <el-select v-model="cur_item.locked">
+              <el-select v-model="cur_item.account_locked">
                 <el-option label="是(1)" value="1"></el-option>
                 <el-option label="否(0)" value="0"></el-option>
               </el-select>
@@ -118,21 +118,10 @@ export default {
   },
   data() {
     return {
-      items: [
-        {
-          'user_name': 'u1',
-          'pswd': '',
-          'locked': 0
-        },
-        {
-          'user_name': 'u2',
-          'pswd': '',
-          'locked': 1
-        }
-      ],
+      items: [],
       cur_item: {},
       orig_item: {},
-      searchContent: "",
+      searchUser: "",
       editVisible: false,
       addVisible: false,
       lockVisible: false
@@ -141,6 +130,24 @@ export default {
   methods: {
     backHome() {
       location.assign('../homepage.html')
+    },
+    getItems() {
+      this.$http.get('http://127.0.0.1:8000/backend/user/').then(
+        function(data) {
+          console.log(data);
+          this.items = data.body
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '获取数据失败！',
+            duration: 6000
+          })
+        }
+      )
     },
     editUser(row) {
       this.editVisible = true
@@ -153,6 +160,22 @@ export default {
     },
     handleLock() {// not finished
       //this.cur_item
+      this.$http.post('http://127.0.0.1:8000/backend/user/lock/', this.cur_item, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.refreshFlag ++
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '操作失败！',
+            duration: 6000
+          })
+        }
+      )
       this.lockVisible = false
     },
     closeLock() {
@@ -174,6 +197,22 @@ export default {
     },
     saveAdd() {// no finished
       this.addVisible = false
+      this.$http.post('http://127.0.0.1:8000/backend/user/create/', this.cur_item, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.refreshFlag ++
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '操作失败！',
+            duration: 6000
+          })
+        }
+      )
     },
     resetAdd() {
       this.cur_item = Object.assign({}, this.orig_item)
@@ -181,14 +220,40 @@ export default {
     closeAdd() {
       this.addVisible = false
     },
+    searchUsername() {// 模糊搜索
+      this.$http.post('http://127.0.0.1:8000/backend/user/search/', {'searchUser': this.searchUser}, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.items = data.body
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '搜索失败！',
+            duration: 6000
+          })
+        }
+      )
+    },
     stateFormat(row, column, cellValue) {
-      if(cellValue == 0) {
+      if(cellValue == 'N') {
         return '否'
       }
-      else if(cellValue == 1) {
+      else if(cellValue == 'Y') {
         return '是'
       }
     }
+  },
+  watch: {
+    refreshFlag() {
+      this.getItems()
+    }
+  },
+  mounted() {
+    this.getItems()
   }
 }
 </script>
