@@ -25,4 +25,6 @@ urlpatterns = [
     path('material/', views.material, name='index14'),
     path('confirm_order_scm/', views.confirm_order_scm, name='index15'),
     path('confirm_takeout_scm/', views.material, name='index15'),
+    path('stock/del/', views.stock_del, name='index16'),
+    path('morder/del/', views.morder_del, name='index17'),
 ]

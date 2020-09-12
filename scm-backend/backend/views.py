@@ -128,7 +128,8 @@ def stock_count(request):
     all_data = list(MaterialStock.objects.all())
     filtered_data = []
     for item in all_data[3:]:
-        # mID = item.get('mID')
+        if item.mState != 0:
+            continue
         mID = item.mID
         material_obj = MaterialInfo.objects.get(pk = mID)
         shelfLife = material_obj.shelfLife
@@ -220,12 +221,14 @@ def morder_filter(request):
     all_data = list(MaterialOrder.objects.filter(moState=moState).values())
     rep = JsonResponse(all_data, safe = False)
     return rep   
-    
+
+
 def morder_stockin(request):
     data_dict = request.POST
     moID = data_dict.get('moID') 
     target = MaterialOrder.objects.get(pk = moID)
     target.moState = 1
+    target.save()
     all_data = list(MaterialOrderDetail.objects.filter(moID = moID).values())
     repackage_data_list = []
     for item in all_data:
@@ -234,7 +237,8 @@ def morder_stockin(request):
         amount = item['amount']
         mState = 0
         print(mID,moID,mState)
-        target = MaterialStock(mID = mID,moID = moID, mState = mState, arrival= datetime.datetime.now(), stock = amount)
+        mName = MaterialInfo.objects.get(pk = mID).mName
+        target = MaterialStock(mID = mID,moID = moID, mState = mState, arrival= datetime.datetime.now(), stock = amount, mName = mName)
         target.save()
         new_data = {
             'mID':mID,
@@ -242,13 +246,25 @@ def morder_stockin(request):
             'amount':amount,
             'unit':item['unit'],
             'price':item['price'],
-            'mName':MaterialInfo.objects.get(pk = mID).mName
+            'mName':mName
         }
         repackage_data_list.append(new_data)
     # url = None
     # res = requests.post(url, data = repackage_data_list)
     rep = HttpResponse("Successfully modify the new data. ")
     return rep
+
+
+def stock_del(request):
+    moID = request.POST.get('moID')
+    MaterialStock.objects.filter(moID = moID).delete()
+    return HttpResponse("success! ")    
+
+def morder_del(request):
+    moID = request.POST.get('moID')
+    MaterialOrder.objects.filter(moID = moID).delete()
+    return HttpResponse("success! ")
+
     
 def korder(request):
     all_data = list(KitchenOrder.objects.all().values())

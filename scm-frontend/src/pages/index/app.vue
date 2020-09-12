@@ -10,10 +10,10 @@
           <el-input v-model="id" placeholder="请输入账号"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input v-model="pswd" placeholder="请输入密码"></el-input>
+          <el-input v-model="pswd" placeholder="请输入密码" show-password @keyup.enter.native="login"></el-input>
         </el-form-item>
       </el-form>
-      <el-button type="primary" plain @click="backHome">登录</el-button>
+      <el-button type="primary" plain @click="login">登录</el-button>
     </el-card>
   </div>
 </template>
@@ -22,32 +22,24 @@
 export default {
   data() {
     return {
-      id: '',
+      id: 'admin1',
       pswd: '',
-      passFlag: false
+      correct_id: 'admin1',
+      correct_pswd: '123'
     }
   },
   methods: {
     login() {// 登录
-      this.$http.post('http://127.0.0.1:8000/backend/login/', {'id': this.id, 'pswd': this.pswd}, {emulateJSON: true}).then(
-        function(data) {
-          console.log(data)
-          this.passFlag = data.body
-        }
-      )
-      if (this.passFlag) {
+      if (this.id == this.correct_id && this.pswd == this.correct_pswd) {
         location.assign('../homepage.html')
       }
       else {
         this.$notify({
-          title: 'Error',
-          message: 'The wrong password!',
+          title: '错误',
+          message: '请输入正确的用户名和密码！',
           duration: 6000
         })
       }
-    },
-    backHome() {// 为方便调试设置的假登录函数
-      location.assign('../homepage.html')
     }
   }
 }

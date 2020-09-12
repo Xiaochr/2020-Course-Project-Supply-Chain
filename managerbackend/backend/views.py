@@ -35,23 +35,6 @@ def correct_list(list_obj):
         new_list.append(correct(dict_item))
     return new_list
 
-def login(request):
-    data_dict = request.POST
-    pswd = data_dict.get('pswd')
-    return True if pswd == "test" else False
-    '''
-    error_msg = ""
-    if request.method == "POST":
-        pwd = request.POST.get("pswd", None)
-
-        if pwd == 'test':
-            return redirect("/terminal/")
-        else:
-            error_msg = "密钥错误"
-
-    return render(request,"login.html",{"error":error_msg})
-    '''
-
 
 
 def info_global(request): # ok
@@ -223,8 +206,9 @@ def create_user(request): # ok
 
 def check_global(user):
     alldata = list(User.objects.filter(user=user).values())
-    alldata_list = correct_list(alldata)
-    return alldata_list
+    for item in alldata:
+        result = [item["select_priv"],item["insert_priv"],item["update_priv"],item["delete_priv"],item["drop_priv"]]
+    return result
 
 def check_local(user, table, cursor):
     method = "select * from tables_priv where user='{}' and table_name = '{}';"
@@ -243,7 +227,7 @@ def check_local(user, table, cursor):
 
 
 
-def info_table(request): # ok?
+def info_table(request): # ok
     conn = pymysql.connect(
         host='localhost',
         user='root', password='123',
@@ -363,5 +347,45 @@ def local_priv(request):
     conn.close()
     rep = HttpResponse("Succeed!")
     return rep
+
+
+def show_table(request):
+    conn = pymysql.connect(
+        host='localhost',
+        user='root', password='123',
+        database='mysql',
+        charset='utf8')
+    cursor = conn.cursor()
+    sql = "show tables;"
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    arr = []
+    for i in data:
+        if i[0] not in silence_list2:
+            arr.append(i[0])
+    return JsonResponse(arr, safe=False)
+
+
+def show_user(request):
+    conn = pymysql.connect(
+        host='localhost',
+        user='root', password='123',
+        database='mysql',
+        charset='utf8')
+    cursor = conn.cursor()
+    sql = "SELECT User FROM mysql.user;"
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    arr = []
+    for i in data:
+        if i[0] not in silence_list:
+            arr.append(i[0])
+    return JsonResponse(arr, safe=False)
+
 
 

@@ -15,4 +15,6 @@ urlpatterns = [
     path('table/', views.info_table, name='index8'),
     path('table/search/', views.search_part_priv, name='index9'),
     path('table/priv/', views.local_priv, name='index10'),
+    path('table/show_table/', views.show_table, name='index11'),
+    path('table/show_user/', views.show_user, name='index12'),
 ]

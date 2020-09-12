@@ -12,10 +12,10 @@
         <el-col :span="8">
           <el-select v-model="searchUser" filterable placeholder="用户名">
             <el-option
-              v-for="item in temp_items"
-              :key="item.user"
-              :label="item.user"
-              :value="item.user">
+              v-for="item in user_list"
+              :key="item"
+              :label="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-col>
@@ -27,10 +27,10 @@
             collapse-tags
             placeholder="数据表名">
             <el-option
-              v-for="item in temp_items"
-              :key="item.table"
-              :label="item.table"
-              :value="item.table">
+              v-for="item in table_list"
+              :key="item"
+              :label="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-col>
@@ -53,6 +53,10 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-divider></el-divider>
+      <el-container>
+        *全局权限优先；如果此处修改无效，请先修改<el-link type="primary" href="../DBpage.html">全局权限</el-link>。
+      </el-container>
     </el-card>
     </el-col>
 
@@ -161,9 +165,8 @@ export default {
   data() {
     return {
       items: [],
-      temp_items: [
-        {'user': 'agent1', 'table': 'test_table'}
-      ],
+      table_list: [],
+      user_list: [],
       cur_item: {},
       orig_item: {},
       searchUser: "",
@@ -191,6 +194,22 @@ export default {
             message: '获取数据失败！',
             duration: 6000
           })
+        }
+      )
+    },
+    getSearchlist() {
+      this.$http.get('http://127.0.0.1:8000/backend/table/show_table/').then(
+        function(data) {
+          console.log(data);
+          this.table_list = data.body
+          this.table_list.push("")
+        }
+      )
+      this.$http.get('http://127.0.0.1:8000/backend/table/show_user/').then(
+        function(data) {
+          console.log(data);
+          this.user_list = data.body
+          this.user_list.push("")
         }
       )
     },
@@ -263,6 +282,7 @@ export default {
   },
   mounted() {
     this.getItems()
+    this.getSearchlist()
   }
 }
 </script>
@@ -271,6 +291,7 @@ export default {
 .table-card {
   width: 1000px;
   margin-top: 50px auto;
+  margin-bottom: 20px auto;
 }
 .data-table {
   margin-top: 500px auto;
@@ -280,6 +301,13 @@ export default {
 }
 .el-row {
   margin-bottom: 20px;
+}
+.footnote {
+  margin-top: 20px;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
