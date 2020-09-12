@@ -41,7 +41,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="用户名">
-              <el-input type="text" v-model="cur_item.user_name" :disabled="true"></el-input>
+              <el-input type="text" v-model="cur_item.user" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="4">
@@ -62,7 +62,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="添加用户" :visible="addVisible" @close="closeEdit()">
+    <el-dialog title="添加用户" :visible="addVisible" @close="closeAdd()">
       <el-form>
         <el-row>
           <el-col :span="6">
@@ -86,8 +86,8 @@
           <el-col :span="6">
             <el-form-item label="是否锁定">
               <el-select v-model="cur_item.account_locked">
-                <el-option label="是(1)" value="1"></el-option>
-                <el-option label="否(0)" value="0"></el-option>
+                <el-option label="是(Y)" value="Y"></el-option>
+                <el-option label="否(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -124,7 +124,8 @@ export default {
       searchUser: "",
       editVisible: false,
       addVisible: false,
-      lockVisible: false
+      lockVisible: false,
+      refreshFlag: 0
     }
   },
   methods: {
@@ -158,12 +159,27 @@ export default {
       this.lockVisible = true
       this.cur_item = row
     },
-    handleLock() {// not finished
-      //this.cur_item
+    handleLock() {// finished
       this.$http.post('http://127.0.0.1:8000/backend/user/lock/', this.cur_item, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
           this.refreshFlag ++
+          this.lockVisible = false
+          if (this.cur_item.account_locked == 'Y') {
+            this.$notify({
+              title: '成功',
+              message: '解锁用户成功！',
+              duration: 6000
+            })
+          }
+          else {
+            this.$notify({
+              title: '成功',
+              message: '锁定用户成功！',
+              duration: 6000
+            })
+          }
+          
         }
       )
       .catch(
@@ -176,13 +192,33 @@ export default {
           })
         }
       )
-      this.lockVisible = false
     },
     closeLock() {
       this.lockVisible = false
     },
-    saveEdit() {// no finished
-      this.editVisible = false
+    saveEdit() {// finished
+      this.$http.post('http://127.0.0.1:8000/backend/user/pswd/', this.cur_item, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.refreshFlag ++
+          this.editVisible = false
+          this.$notify({
+            title: '成功',
+            message: '修改密码成功！',
+            duration: 6000
+          })
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '操作失败！',
+            duration: 6000
+          })
+        }
+      )
     },
     resetEdit() {
       this.cur_item = Object.assign({}, this.orig_item)
@@ -195,12 +231,17 @@ export default {
       this.cur_item = {}
       this.orig_item = {}
     },
-    saveAdd() {// no finished
-      this.addVisible = false
+    saveAdd() {// finished
       this.$http.post('http://127.0.0.1:8000/backend/user/create/', this.cur_item, {emulateJSON: true}).then(
         function(data) {
           console.log(data)
+          this.addVisible = false
           this.refreshFlag ++
+          this.$notify({
+            title: '成功',
+            message: '添加用户成功！',
+            duration: 6000
+          })
         }
       )
       .catch(

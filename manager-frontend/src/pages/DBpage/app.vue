@@ -48,8 +48,8 @@
           <el-col :span="6">
             <el-form-item label="所有权限">
               <el-select v-model="cur_item.all">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -58,8 +58,8 @@
           <el-col :span="6">
             <el-form-item label="Select权限">
               <el-select v-model="cur_item.select_priv">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -70,8 +70,8 @@
           <el-col :span="6">
             <el-form-item label="Update权限">
               <el-select v-model="cur_item.update_priv">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -82,8 +82,8 @@
           <el-col :span="6">
             <el-form-item label="Delete权限">
               <el-select v-model="cur_item.delete_priv">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -92,8 +92,8 @@
           <el-col :span="6">
             <el-form-item label="Create权限">
               <el-select v-model="cur_item.create_priv">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -104,8 +104,8 @@
           <el-col :span="6">
             <el-form-item label="Drop权限">
               <el-select v-model="cur_item.drop_priv">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -116,8 +116,8 @@
           <el-col :span="6">
             <el-form-item label="Trigger权限">
               <el-select v-model="cur_item.trigger_priv">
-                <el-option label="有(Y)" value="1"></el-option>
-                <el-option label="无(N)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -144,7 +144,8 @@ export default {
       cur_item: {},
       orig_item: {},
       searchUser: "",
-      editVisible: false
+      editVisible: false,
+      refreshFlag: 0
     }
   },
   methods: {
@@ -192,8 +193,30 @@ export default {
       this.cur_item = row
       this.orig_item = Object.assign({}, this.cur_item)
     },
-    saveEdit() {
+    saveEdit() { // not finished
       this.editVisible = false
+      this.$http.post('http://127.0.0.1:8000/backend/db/priv/', this.cur_item, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.refreshFlag ++
+          this.editVisible = false
+          this.$notify({
+            title: '成功',
+            message: '修改成功！',
+            duration: 6000
+          })
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '修改失败！',
+            duration: 6000
+          })
+        }
+      )
     },
     resetEdit() {
       this.cur_item = Object.assign({}, this.orig_item)

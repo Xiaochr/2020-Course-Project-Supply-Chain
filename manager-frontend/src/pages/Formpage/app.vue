@@ -12,10 +12,10 @@
         <el-col :span="8">
           <el-select v-model="searchUser" filterable placeholder="用户名">
             <el-option
-              v-for="item in items"
-              :key="item.user_name"
-              :label="item.user_name"
-              :value="item.user_name">
+              v-for="item in temp_items"
+              :key="item.user"
+              :label="item.user"
+              :value="item.user">
             </el-option>
           </el-select>
         </el-col>
@@ -27,10 +27,10 @@
             collapse-tags
             placeholder="数据表名">
             <el-option
-              v-for="item in items"
-              :key="item.table_name"
-              :label="item.table_name"
-              :value="item.table_name">
+              v-for="item in temp_items"
+              :key="item.table"
+              :label="item.table"
+              :value="item.table">
             </el-option>
           </el-select>
         </el-col>
@@ -40,13 +40,13 @@
         </el-col>
       </el-row>
       <el-table class="data-table" :data="items" height="350" stripe border>
-        <el-table-column prop="user_name" label="用户名"></el-table-column>
-        <el-table-column prop="table_name" label="数据表名"></el-table-column>
-        <el-table-column prop="select" label="Select" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="user" label="用户名"></el-table-column>
+        <el-table-column prop="table" label="数据表名"></el-table-column>
+        <el-table-column prop="Select" label="Select" :formatter="stateFormat"></el-table-column>
         <el-table-column prop="insert" label="Insert" :formatter="stateFormat"></el-table-column>
-        <el-table-column prop="update" label="Update" :formatter="stateFormat"></el-table-column>
-        <el-table-column prop="delete" label="Delete" :formatter="stateFormat"></el-table-column>
-        <el-table-column prop="drop" label="Drop" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="Update" label="Update" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="Delete" label="Delete" :formatter="stateFormat"></el-table-column>
+        <el-table-column prop="Drop" label="Drop" :formatter="stateFormat"></el-table-column>
         <el-table-column label="修改权限">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="editAuth(scope.row)">编辑</el-button>
@@ -61,7 +61,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="用户名">
-              <el-input type="text" v-model="cur_item.user_name" :disabled="true"></el-input>
+              <el-input type="text" v-model="cur_item.user" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="7">
@@ -70,16 +70,16 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="数据表名">
-              <el-input type="text" v-model="cur_item.table_name" :disabled="true"></el-input>
+              <el-input type="text" v-model="cur_item.table" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="6">
             <el-form-item label="Select权限">
-              <el-select v-model="cur_item.select" :formatter="stateFormat">
-                <el-option label="有(1)" value="1"></el-option>
-                <el-option label="无(0)" value="0"></el-option>
+              <el-select v-model="cur_item.Select" :formatter="stateFormat">
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -89,9 +89,9 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="Update权限">
-              <el-select v-model="cur_item.update">
-                <el-option label="有(1)" value="1"></el-option>
-                <el-option label="无(0)" value="0"></el-option>
+              <el-select v-model="cur_item.Update">
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -101,9 +101,9 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="Delete权限">
-              <el-select v-model="cur_item.delete">
-                <el-option label="有(1)" value="1"></el-option>
-                <el-option label="无(0)" value="0"></el-option>
+              <el-select v-model="cur_item.Delete">
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -112,8 +112,8 @@
           <el-col :span="6">
             <el-form-item label="Insert权限">
               <el-select v-model="cur_item.insert">
-                <el-option label="有(1)" value="1"></el-option>
-                <el-option label="无(0)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -123,9 +123,9 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="Drop权限">
-              <el-select v-model="cur_item.drop">
-                <el-option label="有(1)" value="1"></el-option>
-                <el-option label="无(0)" value="0"></el-option>
+              <el-select v-model="cur_item.Drop">
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -136,8 +136,8 @@
           <el-col :span="6">
             <el-form-item label="所有权限">
               <el-select v-model="cur_item.all">
-                <el-option label="有(1)" value="1"></el-option>
-                <el-option label="无(0)" value="0"></el-option>
+                <el-option label="有(Y)" value="Y"></el-option>
+                <el-option label="无(N)" value="N"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -160,74 +160,86 @@ export default {
   },
   data() {
     return {
-      items: [
-        {
-          'user_name': 'u1',
-          'table_name': 'table1',
-          'select': 1,
-          'insert': 0,
-          'update': 0,
-          'delete': 1,
-          'drop': 1,
-          'all': 0
-        },
-        {
-          'user_name': 'u1',
-          'table_name': 'table2',
-          'select': 1,
-          'insert': 0,
-          'update': 0,
-          'delete': 1,
-          'drop': 1,
-          'all': 0
-        },
-        {
-          'user_name': 'u2',
-          'table_name': 'table2',
-          'select': 1,
-          'insert': 1,
-          'update': 1,
-          'delete': 1,
-          'drop': 1,
-          'all': 1
-        }
+      items: [],
+      temp_items: [
+        {'user': 'agent1', 'table': 'test_table'}
       ],
       cur_item: {},
       orig_item: {},
       searchUser: "",
       searchTable: "",
       editVisible: false,
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value1: [],
-      value2: []
+      refreshFlag: 0
     }
   },
   methods: {
     backHome() {
       location.assign('../homepage.html')
     },
+    getItems() {
+      this.$http.get('http://127.0.0.1:8000/backend/table/').then(
+        function(data) {
+          console.log(data);
+          this.items = data.body
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '获取数据失败！',
+            duration: 6000
+          })
+        }
+      )
+    },
+    searchName() {// 模糊搜索
+      this.$http.post('http://127.0.0.1:8000/backend/table/search/', {'searchUser': this.searchUser, 'searchTable': this.searchTable}, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.items = data.body
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '搜索失败！',
+            duration: 6000
+          })
+        }
+      )
+    },
     editAuth(row) {
       this.editVisible = true
       this.cur_item = row
       this.orig_item = Object.assign({}, this.cur_item)
     },
-    saveEdit() {
-      this.editVisible = false
+    saveEdit() { // not finished
+      this.$http.post('http://127.0.0.1:8000/backend/table/priv/', this.cur_item, {emulateJSON: true}).then(
+        function(data) {
+          console.log(data)
+          this.refreshFlag ++
+          this.editVisible = false
+          this.$notify({
+            title: '成功',
+            message: '修改成功！',
+            duration: 6000
+          })
+        }
+      )
+      .catch(
+        function(data) {
+          console.log(data)
+          this.$notify({
+            title: '错误',
+            message: '操作失败！',
+            duration: 6000
+          })
+        }
+      )
     },
     resetEdit() {
       this.cur_item = Object.assign({}, this.orig_item)
@@ -236,13 +248,21 @@ export default {
       this.editVisible = false
     },
     stateFormat(row, column, cellValue) {
-      if(cellValue == 0) {
+      if(cellValue == 'N') {
         return '无'
       }
-      else if(cellValue == 1) {
+      else if(cellValue == 'Y') {
         return '有'
       }
     }
+  },
+  watch: {
+    refreshFlag() {
+      this.getItems()
+    }
+  },
+  mounted() {
+    this.getItems()
   }
 }
 </script>
