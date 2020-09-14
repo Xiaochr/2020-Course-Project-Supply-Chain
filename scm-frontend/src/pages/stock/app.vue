@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     backHome() {// 返回主页
-      location.assign('../index.html')
+      location.assign('../homepage.html')
     },
     getItems() {// 向后台发送请求，获取所有原料库存信息
       this.$http.get('http://127.0.0.1:8000/backend/stock/').then(

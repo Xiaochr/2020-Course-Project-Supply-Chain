@@ -171,7 +171,7 @@ export default {
   },
   methods: {
     backHome() {// 返回主页
-      location.assign('../index.html')
+      location.assign('../homepage.html')
     },
     closeAdd() {// 关闭添加对话框
       this.cur_item = Object.assign({}, this.orig_item)

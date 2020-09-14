@@ -38,8 +38,8 @@
 
     <el-dialog title="订单详情" :visible="detailVisible" @close="closeDetail()">
       <el-table :data="order_detail" height="200" stripe border>
-        <el-table-column prop="moID" label="订单编号"></el-table-column>
-        <el-table-column prop="mID" label="原料编号"></el-table-column>
+        <el-table-column prop="moID_id" label="订单编号"></el-table-column>
+        <el-table-column prop="mID_id" label="原料编号"></el-table-column>
         <el-table-column prop="amount" label="原料数量"></el-table-column>
         <el-table-column prop="unit" label="原料单位"></el-table-column>
         <el-table-column prop="price" label="原料价格"></el-table-column>
@@ -143,7 +143,7 @@ export default {
   },
   methods: {
     backHome() {// 返回主页
-      location.assign('../index.html')
+      location.assign('../homepage.html')
     },
     getItems() {// 向后台发送请求，获取所有原料订单信息
       this.$http.get('http://127.0.0.1:8000/backend/morder/').then(
@@ -197,6 +197,7 @@ export default {
       this.$http.post('http://127.0.0.1:8000/backend/morder/stockin/', {'moID': this.order_detail[0].moID_id}, {emulateJSON: true}).then(
         function(data) {
           console.log(data);
+          this.refreshFlag ++
           this.$notify({
             title: '成功',
             message: '确认到库成功！',
@@ -219,6 +220,11 @@ export default {
           console.log(data);
           this.items = data.body
           this.refreshFlag ++
+          this.$notify({
+            title: '成功',
+            message: '新增订单成功！',
+            duration: 6000
+          })
         }
       )
     },
